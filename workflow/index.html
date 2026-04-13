@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modelo de Trabajo en GitHub — GoEcosystemDH</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-card-hover: #1c2129;
+  --border: #30363d;
+  --border-subtle: #21262d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --text-dim: #484f58;
+  --blue: #58a6ff;
+  --blue-bright: #79c0ff;
+  --green: #3fb950;
+  --green-dim: #238636;
+  --red: #f85149;
+  --orange: #d29922;
+  --purple: #bc8cff;
+  --cyan: #39d353;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --max-w: 900px;
+  --transition: 0.2s ease;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.page-wrapper {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+section {
+  margin-bottom: 64px;
+  position: relative;
+}
+
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.breadcrumb .sep { color: var(--text-dim); }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.page-header {
+  text-align: center;
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 2px solid var(--border);
+}
+.page-header .org-label {
+  display: inline-block;
+  background: rgba(56, 139, 253, 0.1);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 139, 253, 0.2);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.page-header h1 {
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--text) 0%, var(--blue-bright) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.page-header .subtitle {
+  color: var(--text-muted);
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   SECTION TITLES
+   ============================================================ */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.section-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-header h2 .num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(56, 139, 253, 0.15);
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.wiki-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--blue);
+  background: rgba(56, 139, 253, 0.08);
+  border: 1px solid rgba(56, 139, 253, 0.15);
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: background var(--transition);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.wiki-pill:hover {
+  background: rgba(56, 139, 253, 0.15);
+  text-decoration: none;
+}
+
+/* ============================================================
+   STEP-BY-STEP COMPONENT
+   ============================================================ */
+.stepper-progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 32px;
+  padding: 0 8px;
+}
+.stepper-progress .step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.stepper-progress .step-dot.future {
+  background: var(--bg-card);
+  color: var(--text-dim);
+  border: 2px solid var(--border);
+}
+.stepper-progress .step-dot.active {
+  background: var(--blue);
+  color: #fff;
+  border: 2px solid var(--blue);
+  box-shadow: 0 0 12px rgba(56, 139, 253, 0.4);
+}
+.stepper-progress .step-dot.completed {
+  background: var(--green-dim);
+  color: #fff;
+  border: 2px solid var(--green);
+}
+.stepper-progress .step-line {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  transition: background 0.3s ease;
+}
+.stepper-progress .step-line.completed {
+  background: var(--green);
+}
+
+.step-panel {
+  display: none;
+  animation: fadeSlideIn 0.35s ease;
+}
+.step-panel.active { display: block; }
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-content-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+.step-content-card .step-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.step-content-card .step-desc {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 12px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font);
+}
+.btn:hover { background: var(--bg-card-hover); border-color: var(--text-dim); }
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+.btn-primary:hover { background: #4090e0; border-color: #4090e0; }
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   CODE BLOCKS
+   ============================================================ */
+.code-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-x: auto;
+  position: relative;
+}
+.code-block .comment { color: var(--text-dim); }
+.code-block .cmd { color: var(--green); }
+.code-block .flag { color: var(--orange); }
+.code-block .string { color: var(--blue-bright); }
+.code-block .kw { color: var(--purple); }
+
+/* ============================================================
+   MERMAID
+   ============================================================ */
+.mermaid-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+.mermaid-container .mermaid {
+  display: flex;
+  justify-content: center;
+}
+
+/* ============================================================
+   LEGEND (BRANCH PILLS)
+   ============================================================ */
+.legend-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.legend-pill {
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  transition: all var(--transition);
+  font-family: var(--mono);
+}
+.legend-pill:hover { border-color: var(--blue); }
+.legend-pill.active { border-color: var(--blue); background: rgba(56, 139, 253, 0.12); }
+.legend-pill[data-branch="main"] { border-left: 4px solid var(--green); }
+.legend-pill[data-branch="develop"] { border-left: 4px solid var(--blue); }
+.legend-pill[data-branch="feature"] { border-left: 4px solid var(--purple); }
+.legend-pill[data-branch="release"] { border-left: 4px solid var(--orange); }
+.legend-pill[data-branch="hotfix"] { border-left: 4px solid var(--red); }
+
+.legend-desc {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  color: var(--text-muted);
+  font-size: 14px;
+  display: none;
+  animation: fadeSlideIn 0.25s ease;
+}
+.legend-desc.active { display: block; }
+
+/* ============================================================
+   TABS (CONVENTIONAL COMMITS + CONECTAR REPO)
+   ============================================================ */
+.tabs-container {
+  margin-bottom: 20px;
+}
+.tabs-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.tab-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--mono);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all var(--transition);
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeSlideIn 0.25s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 24px;
+}
+.tab-panel.active { display: block; }
+
+.commit-example {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  margin: 6px 0;
+}
+.commit-example.good {
+  background: rgba(63, 185, 80, 0.08);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+  color: var(--green);
+}
+.commit-example.bad {
+  background: rgba(248, 81, 73, 0.06);
+  border: 1px solid rgba(248, 81, 73, 0.15);
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.format-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-top: 20px;
+}
+.format-box .format-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.format-box code {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--blue-bright);
+}
+
+.wrong-right-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .wrong-right-grid { grid-template-columns: 1fr; }
+}
+.wrong-right-grid .col-header {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.wrong-right-grid .col-wrong .col-header { color: var(--red); }
+.wrong-right-grid .col-right .col-header { color: var(--green); }
+
+/* ============================================================
+   PIPELINE TABLE
+   ============================================================ */
+.pipeline-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.pipeline-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border-bottom: 2px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.pipeline-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.pipeline-table tr:last-child td { border-bottom: none; }
+.pipeline-table .actor-robot { color: var(--blue-bright); }
+.pipeline-table .actor-human { color: var(--orange); }
+
+/* ============================================================
+   MOCK PR
+   ============================================================ */
+.mock-pr {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.mock-pr-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.mock-pr-header .pr-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(63, 185, 80, 0.12);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.mock-pr-header .pr-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.mock-pr-labels {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.pr-label {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pr-label.feature { background: rgba(188, 140, 255, 0.15); color: var(--purple); border: 1px solid rgba(188, 140, 255, 0.3); }
+.pr-label.size { background: rgba(210, 153, 34, 0.15); color: var(--orange); border: 1px solid rgba(210, 153, 34, 0.3); }
+
+.mock-pr-body {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.mock-pr-body h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+}
+.mock-pr-body p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.mock-pr-body ul {
+  list-style: none;
+  padding: 0;
+}
+.mock-pr-body li {
+  font-size: 14px;
+  padding: 3px 0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mock-pr-body li .check {
+  color: var(--green);
+  font-size: 16px;
+}
+
+.mock-pr-footer {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.pr-badge.approved { background: rgba(63, 185, 80, 0.12); color: var(--green); }
+.pr-badge.checks { background: rgba(63, 185, 80, 0.12); color: var(--green); }
+
+.approval-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+.approval-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.approval-card:hover {
+  border-color: var(--blue);
+  background: var(--bg-card-hover);
+}
+.approval-card .card-type {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.approval-card .card-rule {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   COMMANDS (QUICK REFERENCE)
+   ============================================================ */
+.cmd-scenarios {
+  display: grid;
+  gap: 16px;
+}
+.cmd-scenario {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.cmd-scenario-header {
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cmd-scenario-body {
+  padding: 16px 20px;
+  position: relative;
+}
+.cmd-scenario-body pre {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 2;
+  color: var(--green);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.copy-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all var(--transition);
+  font-family: var(--font);
+}
+.copy-btn:hover { color: var(--text); border-color: var(--text-dim); }
+.copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.footer-link-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: all var(--transition);
+  display: block;
+  text-decoration: none;
+}
+.footer-link-card:hover {
+  border-color: var(--blue);
+  background: var(--bg-card-hover);
+  text-decoration: none;
+}
+.footer-link-card .card-chapter {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.footer-link-card .card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.footer-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 14px;
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+.mt-sm { margin-top: 12px; }
+.mt-md { margin-top: 20px; }
+.mb-md { margin-bottom: 20px; }
+
+/* ============================================================
+   SECTION A: CONECTAR TU REPO — TABS + BEFORE/AFTER
+   ============================================================ */
+.repo-tabs-nav {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 0;
+}
+.repo-tab-btn {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all var(--transition);
+}
+.repo-tab-btn:hover { color: var(--text); }
+.repo-tab-btn.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+.repo-tab-panel {
+  display: none;
+  animation: fadeSlideIn 0.25s ease;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 24px;
+}
+.repo-tab-panel.active { display: block; }
+
+.before-after-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.before-after-box {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  text-align: center;
+}
+.before-after-box.before {
+  border-color: var(--red);
+}
+.before-after-box.before .ba-label { color: var(--red); }
+.before-after-box.before .ba-url {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+.before-after-box.after {
+  border-color: var(--green);
+}
+.before-after-box.after .ba-label { color: var(--green); }
+.before-after-box.after .ba-url { color: var(--green); }
+.ba-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.ba-url {
+  font-family: var(--mono);
+  font-size: 13px;
+  word-break: break-all;
+}
+.before-after-arrow {
+  font-size: 28px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.code-copyable {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-x: auto;
+  position: relative;
+  margin-bottom: 14px;
+  color: var(--green);
+}
+.code-copyable .copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.verify-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.verify-result.ok {
+  background: rgba(63, 185, 80, 0.08);
+  border: 1px solid rgba(63, 185, 80, 0.2);
+  color: var(--green);
+}
+.verify-result.fail {
+  background: rgba(248, 81, 73, 0.06);
+  border: 1px solid rgba(248, 81, 73, 0.15);
+  color: var(--red);
+}
+.verify-icon { font-size: 18px; flex-shrink: 0; }
+
+.repo-explanation {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 14px;
+}
+
+/* ============================================================
+   SECTION B: ESTRUCTURA DE RAMAS — BUILDING FLOORS
+   ============================================================ */
+.branch-building {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 24px;
+}
+.branch-floor {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 18px 24px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+.branch-floor:first-child {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.branch-floor:last-child {
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+.branch-floor:not(:last-child) {
+  border-bottom: none;
+}
+.branch-floor.floor-main { border-left: 4px solid var(--green); }
+.branch-floor.floor-develop { border-left: 4px solid var(--blue); }
+.branch-floor.floor-feature { border-left: 4px solid var(--purple); }
+
+.floor-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.floor-indicator {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.floor-name {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 15px;
+}
+.floor-label {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.floor-level {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.floor-details {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+  margin-top: 0;
+}
+.branch-floor:hover .floor-details,
+.branch-floor.expanded .floor-details {
+  max-height: 120px;
+  opacity: 1;
+  margin-top: 12px;
+}
+.floor-rules {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.floor-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.floor-rule .rule-label { color: var(--text-dim); }
+.floor-rule .rule-value { font-weight: 600; }
+
+.branch-naming-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 20px;
+}
+.branch-naming-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border-bottom: 2px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.branch-naming-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.branch-naming-table tr:last-child td { border-bottom: none; }
+.branch-naming-table code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: rgba(56, 139, 253, 0.08);
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: var(--blue-bright);
+}
+
+/* ============================================================
+   SECTION C: CREAR PR — GITHUB UI MOCKUPS
+   ============================================================ */
+.gh-banner {
+  background: #fff8c5;
+  border: 1px solid #d4a72c;
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.gh-banner-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.gh-banner-text {
+  flex: 1;
+  min-width: 200px;
+  font-size: 14px;
+  color: #1c2129;
+  font-weight: 500;
+}
+.gh-banner-text strong {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.gh-btn-green {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(35, 134, 54, 0.6);
+  background: #238636;
+  color: #fff;
+  cursor: default;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.gh-btn-blue {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(31, 111, 235, 0.6);
+  background: #1f6feb;
+  color: #fff;
+  cursor: default;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+
+.gh-pr-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.gh-pr-form-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.gh-pr-form-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.gh-pr-form-branch-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  background: rgba(56, 139, 253, 0.08);
+  border: 1px solid rgba(56, 139, 253, 0.15);
+  padding: 4px 12px;
+  border-radius: 20px;
+  color: var(--blue);
+  font-family: var(--mono);
+}
+.gh-pr-form-body {
+  display: flex;
+  gap: 0;
+}
+.gh-pr-form-main {
+  flex: 1;
+  padding: 20px 24px;
+  border-right: 1px solid var(--border);
+  min-width: 0;
+}
+.gh-pr-form-sidebar {
+  width: 220px;
+  padding: 20px;
+  flex-shrink: 0;
+}
+.gh-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  margin-bottom: 14px;
+}
+.gh-textarea {
+  width: 100%;
+  min-height: 280px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: var(--mono);
+  line-height: 1.7;
+  resize: none;
+  margin-bottom: 14px;
+  white-space: pre-wrap;
+}
+.gh-sidebar-section {
+  margin-bottom: 18px;
+}
+.gh-sidebar-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.gh-sidebar-value {
+  font-size: 13px;
+  color: var(--text);
+}
+.gh-sidebar-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.gh-checks-list {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.gh-check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 14px;
+}
+.gh-check-row:last-child { border-bottom: none; }
+.gh-check-icon { font-size: 16px; flex-shrink: 0; }
+.gh-check-name { flex: 1; }
+.gh-check-status { font-size: 12px; color: var(--text-dim); }
+
+.gh-merge-area {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.gh-merge-text {
+  flex: 1;
+  min-width: 200px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.pr-step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.pr-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(56, 139, 253, 0.15);
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.pr-step-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+}
+.pr-step-note {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* ============================================================
+   SECTION D: GITHUB DESKTOP — APP MOCKUPS
+   ============================================================ */
+.ghd-callout {
+  background: rgba(56, 139, 253, 0.06);
+  border: 1px solid rgba(56, 139, 253, 0.15);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ghd-callout-icon { font-size: 20px; flex-shrink: 0; }
+
+.ghd-download-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  transition: all var(--transition);
+}
+.ghd-download-bar:hover {
+  border-color: var(--blue);
+  background: var(--bg-card-hover);
+  text-decoration: none;
+}
+.ghd-download-icon { font-size: 22px; }
+.ghd-download-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.ghd-download-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.ghd-setup-steps {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.ghd-setup-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.ghd-step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(56, 139, 253, 0.15);
+  color: var(--blue);
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ghd-step-content {
+  flex: 1;
+  min-width: 0;
+}
+.ghd-step-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* GitHub Desktop App Mockup */
+.ghd-app-frame {
+  background: #1e2228;
+  border: 1px solid #444c56;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 13px;
+}
+.ghd-titlebar {
+  background: #161b22;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #30363d;
+}
+.ghd-traffic-lights {
+  display: flex;
+  gap: 6px;
+}
+.ghd-traffic-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.ghd-tl-red { background: #ff5f57; }
+.ghd-tl-yellow { background: #febc2e; }
+.ghd-tl-green { background: #28c840; }
+.ghd-titlebar-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+.ghd-app-body {
+  padding: 16px 20px;
+}
+.ghd-welcome-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 14px;
+}
+.ghd-mock-btn {
+  display: block;
+  margin: 0 auto 10px;
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  cursor: default;
+  font-family: var(--font);
+}
+.ghd-mock-btn.blue {
+  background: #1f6feb;
+  color: #fff;
+  border: 1px solid rgba(31, 111, 235, 0.6);
+}
+.ghd-mock-note {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* GitHub Desktop clone mockup */
+.ghd-menu-bar {
+  background: #161b22;
+  padding: 8px 14px;
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-bottom: 1px solid #30363d;
+}
+.ghd-menu-bar .active-menu { color: var(--text); font-weight: 600; }
+.ghd-clone-body {
+  padding: 16px 20px;
+}
+.ghd-tab-row {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #30363d;
+  margin-bottom: 14px;
+}
+.ghd-tab {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+}
+.ghd-tab.active-tab {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+.ghd-filter-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-size: 12px;
+  margin-bottom: 10px;
+  font-family: var(--font);
+}
+.ghd-repo-list {
+  list-style: none;
+  margin-bottom: 14px;
+}
+.ghd-repo-list li {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+.ghd-repo-list li.selected {
+  background: rgba(56, 139, 253, 0.12);
+  color: var(--blue);
+}
+.ghd-path-row {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.ghd-path-row code {
+  font-family: var(--mono);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* GitHub Desktop commit mockup */
+.ghd-commit-panel {
+  display: flex;
+  gap: 0;
+}
+.ghd-commit-sidebar {
+  width: 45%;
+  border-right: 1px solid #30363d;
+  padding: 14px;
+}
+.ghd-commit-main {
+  flex: 1;
+  padding: 14px;
+}
+.ghd-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-radius: 4px;
+}
+.ghd-file-item .ghd-checkbox {
+  width: 14px;
+  height: 14px;
+  background: rgba(56, 139, 253, 0.15);
+  border: 1px solid var(--blue);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+.ghd-file-name { color: var(--text); }
+.ghd-file-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.ghd-file-badge.modified { background: rgba(210, 153, 34, 0.15); color: var(--orange); }
+.ghd-file-badge.added { background: rgba(63, 185, 80, 0.12); color: var(--green); }
+.ghd-commit-msg-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font);
+  margin-bottom: 10px;
+}
+.ghd-commit-desc-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font);
+  min-height: 40px;
+  margin-bottom: 10px;
+  resize: none;
+}
+
+/* GitHub Desktop toolbar mockup */
+.ghd-toolbar {
+  background: #161b22;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #30363d;
+}
+.ghd-toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text);
+}
+.ghd-toolbar-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: default;
+  font-family: var(--font);
+}
+.ghd-toolbar-btn.blue { background: #1f6feb; color: #fff; border: 1px solid rgba(31, 111, 235, 0.6); }
+
+/* Daily workflow flow */
+.ghd-flow-steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.ghd-flow-step {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  position: relative;
+}
+.ghd-flow-step:not(:last-child)::after {
+  content: "\2192";
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: var(--text-dim);
+  z-index: 1;
+}
+.ghd-flow-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(56, 139, 253, 0.15);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+.ghd-flow-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.ghd-flow-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Comparison table */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 16px;
+}
+.comparison-table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border-bottom: 2px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.comparison-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+}
+.comparison-table tr:last-child td { border-bottom: none; }
+.comparison-table code {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: rgba(56, 139, 253, 0.06);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--green);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .section-header { flex-direction: column; }
+  .stepper-progress .step-dot { width: 30px; height: 30px; font-size: 12px; }
+  .step-content-card { padding: 20px 16px; }
+  .tabs-nav { gap: 0; }
+  .tab-btn { padding: 8px 10px; font-size: 12px; }
+  .tab-panel { padding: 16px; }
+  .approval-cards { grid-template-columns: 1fr; }
+  .wrong-right-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .mock-pr-header, .mock-pr-body, .mock-pr-footer { padding: 16px; }
+  .before-after-row { flex-direction: column; }
+  .before-after-arrow { transform: rotate(90deg); }
+  .gh-pr-form-body { flex-direction: column; }
+  .gh-pr-form-sidebar { width: 100%; border-top: 1px solid var(--border); }
+  .gh-pr-form-main { border-right: none; }
+  .ghd-flow-steps { grid-template-columns: 1fr; }
+  .ghd-flow-step:not(:last-child)::after { display: none; }
+  .ghd-commit-panel { flex-direction: column; }
+  .ghd-commit-sidebar { width: 100%; border-right: none; border-bottom: 1px solid #30363d; }
+  .repo-tab-btn { padding: 8px 10px; font-size: 12px; }
+}
+
+/* ============================================================
+   SMOOTH SCROLL
+   ============================================================ */
+html { scroll-behavior: smooth; }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- ============================
+       BREADCRUMB
+       ============================ -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index.html">Portal</a>
+    <span class="sep">/</span>
+    <span>Modelo de Trabajo</span>
+  </nav>
+
+  <!-- ============================
+       HEADER
+       ============================ -->
+  <header class="page-header">
+    <div class="org-label">GoEcosystemDH</div>
+    <h1>Modelo de Trabajo en GitHub</h1>
+    <p class="subtitle">Guia visual interactiva &mdash; 5 minutos para entender todo el flujo</p>
+  </header>
+
+  <!-- ============================
+       SECTION A: CONECTAR TU REPO
+       ============================ -->
+  <section id="sec-connect">
+    <div class="section-header">
+      <h2>&#128279; Conectar tu Repo</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/configuracion-del-entorno-oVSEjUzXB4" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <div class="tabs-container">
+      <div class="repo-tabs-nav" id="repoTabs" role="tablist">
+        <button class="repo-tab-btn active" data-repo-tab="origin" role="tab" onclick="switchRepoTab('origin')">Cambiar el origen</button>
+        <button class="repo-tab-btn" data-repo-tab="clone" role="tab" onclick="switchRepoTab('clone')">Clonar desde cero</button>
+        <button class="repo-tab-btn" data-repo-tab="verify" role="tab" onclick="switchRepoTab('verify')">Verificar</button>
+      </div>
+
+      <!-- Tab 1: Cambiar el origen -->
+      <div class="repo-tab-panel active" data-repo-panel="origin">
+        <div class="before-after-row">
+          <div class="before-after-box before">
+            <div class="ba-label">GitLab (antes)</div>
+            <div class="ba-url">https://gitlab.com/goecosystem/TU-REPO.git</div>
+          </div>
+          <div class="before-after-arrow">&rarr;</div>
+          <div class="before-after-box after">
+            <div class="ba-label">GitHub (ahora)</div>
+            <div class="ba-url">https://github.com/GoEcosystemDH/TU-REPO.git</div>
+          </div>
+        </div>
+
+        <div class="code-copyable">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd="git remote set-url origin https://github.com/GoEcosystemDH/TU-REPO.git">&#128203; Copiar</button>
+          git remote set-url origin https://github.com/GoEcosystemDH/TU-REPO.git
+        </div>
+
+        <div class="repo-explanation">
+          Este comando le dice a git: <strong>"ahora mi codigo vive en GitHub, no en GitLab"</strong>. Tu carpeta local, tus cambios, tu historial &mdash; todo se conserva. Solo cambia a donde se sube.
+        </div>
+      </div>
+
+      <!-- Tab 2: Clonar desde cero -->
+      <div class="repo-tab-panel" data-repo-panel="clone">
+        <div class="code-copyable">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd="git clone https://github.com/GoEcosystemDH/TU-REPO.git
+cd TU-REPO">&#128203; Copiar</button>
+          git clone https://github.com/GoEcosystemDH/TU-REPO.git<br>
+          cd TU-REPO
+        </div>
+
+        <div class="repo-explanation">
+          Usa esta opcion si: es tu primera vez con el repo, quieres una copia limpia, o tuviste problemas con el cambio de origen.
+        </div>
+      </div>
+
+      <!-- Tab 3: Verificar -->
+      <div class="repo-tab-panel" data-repo-panel="verify">
+        <div class="code-copyable">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd="git remote -v">&#128203; Copiar</button>
+          git remote -v
+        </div>
+
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:12px;">Resultado esperado:</p>
+
+        <div class="code-copyable" style="color:var(--text-muted);margin-bottom:16px;">
+          origin&nbsp;&nbsp;https://github.com/GoEcosystemDH/his-api.git (fetch)<br>
+          origin&nbsp;&nbsp;https://github.com/GoEcosystemDH/his-api.git (push)
+        </div>
+
+        <div class="verify-result ok">
+          <span class="verify-icon">&#9989;</span>
+          <span>Si ves <strong>github.com/GoEcosystemDH</strong>, estas bien.</span>
+        </div>
+        <div class="verify-result fail">
+          <span class="verify-icon">&#10060;</span>
+          <span>Si ves <strong>gitlab.com</strong> o cualquier otra URL, repite el paso 1.</span>
+        </div>
+
+        <p style="margin-top:16px;font-size:14px;">
+          &#128270; No sabes el nombre de tu repo? &rarr;
+          <a href="../homologacion/">Buscalo en la Tabla de Homologacion</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 1: TU CODIGO EN 6 PASOS
+       ============================ -->
+  <section id="sec-steps">
+    <div class="section-header">
+      <h2><span class="num">1</span> Tu codigo en 6 pasos</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/flujo-de-trabajo-QAw78oyzDK" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <!-- Progress dots -->
+    <div class="stepper-progress" id="stepperProgress">
+      <div class="step-dot active" data-step="0" onclick="goToStep(0)">1</div>
+      <div class="step-line" data-line="0"></div>
+      <div class="step-dot future" data-step="1" onclick="goToStep(1)">2</div>
+      <div class="step-line" data-line="1"></div>
+      <div class="step-dot future" data-step="2" onclick="goToStep(2)">3</div>
+      <div class="step-line" data-line="2"></div>
+      <div class="step-dot future" data-step="3" onclick="goToStep(3)">4</div>
+      <div class="step-line" data-line="3"></div>
+      <div class="step-dot future" data-step="4" onclick="goToStep(4)">5</div>
+      <div class="step-line" data-line="4"></div>
+      <div class="step-dot future" data-step="5" onclick="goToStep(5)">6</div>
+    </div>
+
+    <!-- Step panels -->
+    <div class="step-panel active" data-panel="0">
+      <div class="step-content-card">
+        <div class="step-title">&#127919; Tomas una Task en Azure DevOps</div>
+        <div class="step-desc">Ve al board de tu equipo en Azure DevOps, elige una tarea y asignala a tu nombre. Cambia su estado a <strong>In Progress</strong>.</div>
+        <div class="code-block">
+          <span class="comment"># El ID de la task lo vas a necesitar en tu branch y commits</span><br>
+          <span class="string">Task AB#3456</span> &mdash; "Agregar endpoint de exportacion PDF"<br>
+          <span class="flag">Estado:</span> To Do &rarr; <span class="cmd">In Progress</span>
+        </div>
+        <div class="step-nav">
+          <button class="btn" disabled>&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="goToStep(1)">Siguiente &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-panel" data-panel="1">
+      <div class="step-content-card">
+        <div class="step-title">&#127793; Creas una branch desde develop</div>
+        <div class="step-desc">Tu rama siempre nace de <code>develop</code> y sigue el patron <code>feature/descripcion</code>. Nunca trabajes directamente sobre develop.</div>
+        <div class="code-block">
+          <span class="cmd">git checkout develop</span><br>
+          <span class="cmd">git pull origin develop</span><br>
+          <span class="cmd">git checkout -b</span> <span class="string">feature/export-pdf</span>
+        </div>
+        <div class="step-nav">
+          <button class="btn" onclick="goToStep(0)">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="goToStep(2)">Siguiente &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-panel" data-panel="2">
+      <div class="step-content-card">
+        <div class="step-title">&#128187; Desarrollas y haces commits</div>
+        <div class="step-desc">Trabaja en tu branch. Cada commit sigue el formato de Conventional Commits. Incluye el ID de la task de Azure DevOps.</div>
+        <div class="code-block">
+          <span class="cmd">git add</span> <span class="string">src/export/pdf-service.ts</span><br>
+          <span class="cmd">git commit -m</span> <span class="string">"feat(export): agregar generacion de PDF AB#3456"</span><br><br>
+          <span class="cmd">git add</span> <span class="string">tests/export/pdf-service.spec.ts</span><br>
+          <span class="cmd">git commit -m</span> <span class="string">"test(export): agregar tests de generacion PDF AB#3456"</span>
+        </div>
+        <div class="step-nav">
+          <button class="btn" onclick="goToStep(1)">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="goToStep(3)">Siguiente &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-panel" data-panel="3">
+      <div class="step-content-card">
+        <div class="step-title">&#128228; Creas un Pull Request</div>
+        <div class="step-desc">Sube tu branch y crea un PR hacia <code>develop</code>. Puedes hacerlo desde la web de GitHub (recomendado) o con <code>gh pr create</code> en la terminal. Ver seccion <a href="#sec-create-pr">"Crear un PR desde GitHub Web"</a> mas abajo.</div>
+        <div class="code-block">
+          <span class="cmd">git push -u origin</span> <span class="string">feature/export-pdf</span><br><br>
+          <span class="comment"># Desde GitHub CLI (o usa la web — ver seccion detallada abajo)</span><br>
+          <span class="cmd">gh pr create</span> <span class="flag">--base</span> develop <span class="flag">--title</span> <span class="string">"feat: agregar endpoint de exportacion PDF AB#3456"</span> <span class="flag">--fill</span>
+        </div>
+        <div class="step-nav">
+          <button class="btn" onclick="goToStep(2)">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="goToStep(4)">Siguiente &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-panel" data-panel="4">
+      <div class="step-content-card">
+        <div class="step-title">&#128269; Code Review &mdash; un compañero revisa</div>
+        <div class="step-desc">Un compañero de equipo revisa tu codigo. Responde a los comentarios, haz los cambios necesarios y espera la aprobacion.</div>
+        <div class="code-block">
+          <span class="comment"># Tu reviewer puede aprobar, pedir cambios, o comentar</span><br>
+          <span class="flag">Estado:</span> <span class="string">&#10003; Approved</span> &mdash; Tu PR esta listo para merge<br>
+          <span class="flag">Estado:</span> <span class="orange">&#9998; Changes requested</span> &mdash; Corrige y vuelve a pedir review
+        </div>
+        <div class="step-nav">
+          <button class="btn" onclick="goToStep(3)">&larr; Anterior</button>
+          <button class="btn btn-primary" onclick="goToStep(5)">Siguiente &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-panel" data-panel="5">
+      <div class="step-content-card">
+        <div class="step-title">&#128640; Merge &rarr; Pipeline despliega automaticamente</div>
+        <div class="step-desc">Tu PR se mergea a develop. El pipeline de CI/CD construye, prueba y despliega tu codigo automaticamente.</div>
+        <div class="code-block">
+          <span class="comment"># El merge activa el pipeline automaticamente</span><br>
+          <span class="cmd">develop</span> &larr; merge &larr; <span class="string">feature/export-pdf</span><br><br>
+          <span class="flag">Pipeline:</span> Build &#10003; &rarr; Test &#10003; &rarr; Staging &#10003; &rarr; <span class="cmd">Production &#10003;</span>
+        </div>
+        <div class="step-nav">
+          <button class="btn" onclick="goToStep(4)">&larr; Anterior</button>
+          <button class="btn" disabled>Siguiente &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 2: ESTRUCTURA DE RAMAS (IMPROVED)
+       ============================ -->
+  <section id="sec-gitflow">
+    <div class="section-header">
+      <h2><span class="num">2</span> Estructura de Ramas</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/politica-de-branches-rZbPrr8J22" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <!-- Building floors diagram -->
+    <div class="branch-building">
+      <div class="branch-floor floor-main" onclick="this.classList.toggle('expanded')">
+        <div class="floor-header">
+          <span class="floor-indicator">&#128994;</span>
+          <span class="floor-name">main</span>
+          <span class="floor-label">(Produccion)</span>
+          <span class="floor-level">Piso 3: Lo que ven los usuarios</span>
+        </div>
+        <div class="floor-details">
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">Solo llega codigo probado y aprobado.</p>
+          <div class="floor-rules">
+            <div class="floor-rule">
+              <span class="rule-label">Push directo:</span>
+              <span class="rule-value" style="color:var(--red)">NO</span>
+            </div>
+            <div class="floor-rule">
+              <span class="rule-label">Merge via:</span>
+              <span class="rule-value">release/ o hotfix/</span>
+            </div>
+            <div class="floor-rule">
+              <span class="rule-label">Proteccion:</span>
+              <span class="rule-value">Bloqueada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="branch-floor floor-develop" onclick="this.classList.toggle('expanded')">
+        <div class="floor-header">
+          <span class="floor-indicator">&#128309;</span>
+          <span class="floor-name">develop</span>
+          <span class="floor-label">(Integracion)</span>
+          <span class="floor-level">Piso 2: Aqui se juntan los cambios</span>
+        </div>
+        <div class="floor-details">
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">Aqui convergen todas las features del equipo.</p>
+          <div class="floor-rules">
+            <div class="floor-rule">
+              <span class="rule-label">Push directo:</span>
+              <span class="rule-value" style="color:var(--red)">NO</span>
+            </div>
+            <div class="floor-rule">
+              <span class="rule-label">Merge via:</span>
+              <span class="rule-value">PR con 1 approval</span>
+            </div>
+            <div class="floor-rule">
+              <span class="rule-label">Fuente:</span>
+              <span class="rule-value">feature/ y bugfix/</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="branch-floor floor-feature" onclick="this.classList.toggle('expanded')">
+        <div class="floor-header">
+          <span class="floor-indicator">&#128995;</span>
+          <span class="floor-name">feature/*</span>
+          <span class="floor-label">(Tu trabajo)</span>
+          <span class="floor-level">Piso 1: Tu escritorio personal</span>
+        </div>
+        <div class="floor-details">
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:8px;">Aqui desarrollas tranquilo, sin afectar a nadie.</p>
+          <div class="floor-rules">
+            <div class="floor-rule">
+              <span class="rule-label">Push directo:</span>
+              <span class="rule-value" style="color:var(--green)">SI (tu branch)</span>
+            </div>
+            <div class="floor-rule">
+              <span class="rule-label">Nace de:</span>
+              <span class="rule-value">develop</span>
+            </div>
+            <div class="floor-rule">
+              <span class="rule-label">Vuelve a:</span>
+              <span class="rule-value">develop (via PR)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mermaid gitGraph -->
+    <div class="mermaid-container">
+      <pre class="mermaid">
+gitGraph
+    commit id: "v1.0"
+    branch develop
+    checkout develop
+    commit id: "base"
+    branch feature/citas
+    commit id: "feat: endpoint"
+    commit id: "test: tests"
+    checkout develop
+    merge feature/citas id: "PR #1"
+    branch release/v1.1
+    commit id: "bump version"
+    checkout main
+    merge release/v1.1 id: "v1.1" tag: "v1.1"
+      </pre>
+    </div>
+
+    <!-- Legend pills -->
+    <div class="legend-pills" id="legendPills">
+      <button class="legend-pill" data-branch="main" onclick="toggleLegend('main')">main</button>
+      <button class="legend-pill" data-branch="develop" onclick="toggleLegend('develop')">develop</button>
+      <button class="legend-pill" data-branch="feature" onclick="toggleLegend('feature')">feature/</button>
+      <button class="legend-pill" data-branch="release" onclick="toggleLegend('release')">release/</button>
+      <button class="legend-pill" data-branch="hotfix" onclick="toggleLegend('hotfix')">hotfix/</button>
+    </div>
+
+    <div class="legend-desc" id="legend-main">
+      <strong style="color:var(--green)">main</strong> &mdash; Produccion. Bloqueada. Solo recibe merges de <code>release/</code> y <code>hotfix/</code>. Cada merge genera un tag con la version.
+    </div>
+    <div class="legend-desc" id="legend-develop">
+      <strong style="color:var(--blue)">develop</strong> &mdash; Integracion. Requiere PR. Aqui convergen todas las features. Es la fuente de verdad del desarrollo activo.
+    </div>
+    <div class="legend-desc" id="legend-feature">
+      <strong style="color:var(--purple)">feature/</strong> &mdash; Tu rama de trabajo. Se crea desde develop, se mergea a develop via PR. Formato: <code>feature/nombre-descriptivo</code>.
+    </div>
+    <div class="legend-desc" id="legend-release">
+      <strong style="color:var(--orange)">release/</strong> &mdash; Preparacion de release. Se crea desde develop, se mergea a main y develop. Aqui se hace bump de version y ajustes finales.
+    </div>
+    <div class="legend-desc" id="legend-hotfix">
+      <strong style="color:var(--red)">hotfix/</strong> &mdash; Fix urgente en produccion. Se crea desde main, se mergea a main y develop. Solo para incidentes criticos.
+    </div>
+
+    <!-- Branch naming table -->
+    <div style="overflow-x:auto;margin-top:24px;">
+      <table class="branch-naming-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Formato</th>
+            <th>Ejemplo</th>
+            <th>Desde &rarr; Hacia</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>feature</strong></td>
+            <td><code>feature/ID-descripcion</code></td>
+            <td><code>feature/3456-endpoint-citas</code></td>
+            <td>develop &rarr; develop</td>
+          </tr>
+          <tr>
+            <td><strong>hotfix</strong></td>
+            <td><code>hotfix/descripcion</code></td>
+            <td><code>hotfix/timeout-db</code></td>
+            <td>main &rarr; main + develop</td>
+          </tr>
+          <tr>
+            <td><strong>release</strong></td>
+            <td><code>release/vX.Y.Z</code></td>
+            <td><code>release/v2.5.0</code></td>
+            <td>develop &rarr; main + develop</td>
+          </tr>
+          <tr>
+            <td><strong>bugfix</strong></td>
+            <td><code>bugfix/descripcion</code></td>
+            <td><code>bugfix/validacion-cedula</code></td>
+            <td>develop &rarr; develop</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 3: CONVENTIONAL COMMITS
+       ============================ -->
+  <section id="sec-commits">
+    <div class="section-header">
+      <h2><span class="num">3</span> Conventional Commits</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/conventional-commits-guia-para-desarrolladores-O8WHML45Wd" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <div class="tabs-container">
+      <div class="tabs-nav" id="commitTabs" role="tablist">
+        <button class="tab-btn active" data-tab="feat" role="tab" onclick="switchTab('feat')">feat</button>
+        <button class="tab-btn" data-tab="fix" role="tab" onclick="switchTab('fix')">fix</button>
+        <button class="tab-btn" data-tab="docs" role="tab" onclick="switchTab('docs')">docs</button>
+        <button class="tab-btn" data-tab="refactor" role="tab" onclick="switchTab('refactor')">refactor</button>
+        <button class="tab-btn" data-tab="test" role="tab" onclick="switchTab('test')">test</button>
+        <button class="tab-btn" data-tab="chore" role="tab" onclick="switchTab('chore')">chore</button>
+        <button class="tab-btn" data-tab="ci" role="tab" onclick="switchTab('ci')">ci</button>
+        <button class="tab-btn" data-tab="perf" role="tab" onclick="switchTab('perf')">perf</button>
+      </div>
+
+      <!-- feat -->
+      <div class="tab-panel active" data-tab-panel="feat">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">feat</strong> &mdash; Nueva funcionalidad visible para el usuario. Algo que antes no existia.</p>
+        <div class="commit-example good">feat(auth): agregar login con SSO de Azure AD</div>
+        <div class="commit-example good">feat(citas): implementar reserva de citas por rango horario AB#2100</div>
+        <div class="commit-example bad">update code</div>
+      </div>
+
+      <!-- fix -->
+      <div class="tab-panel" data-tab-panel="fix">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">fix</strong> &mdash; Correccion de un bug. Algo que antes funcionaba mal y ahora funciona bien.</p>
+        <div class="commit-example good">fix(costos): corregir calculo de redondeo en facturas</div>
+        <div class="commit-example good">fix(rcf): resolver error 500 al consultar RCF sin vigencia AB#3001</div>
+        <div class="commit-example bad">fix bug</div>
+      </div>
+
+      <!-- docs -->
+      <div class="tab-panel" data-tab-panel="docs">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">docs</strong> &mdash; Cambios en documentacion. README, comentarios en codigo, OpenAPI specs.</p>
+        <div class="commit-example good">docs(api): documentar endpoint de pacientes con ejemplos</div>
+        <div class="commit-example good">docs(his): actualizar diagrama de arquitectura del modulo HIS</div>
+        <div class="commit-example bad">cambios varios</div>
+      </div>
+
+      <!-- refactor -->
+      <div class="tab-panel" data-tab-panel="refactor">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">refactor</strong> &mdash; Reestructuracion de codigo sin cambiar comportamiento externo. Ni agrega funcionalidad ni corrige bugs.</p>
+        <div class="commit-example good">refactor(citapp): extraer logica de validacion a servicio dedicado</div>
+        <div class="commit-example good">refactor(costos): simplificar queries del reporte mensual</div>
+        <div class="commit-example bad">refactoring</div>
+      </div>
+
+      <!-- test -->
+      <div class="tab-panel" data-tab-panel="test">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">test</strong> &mdash; Agregar o modificar tests. No cambia codigo de produccion.</p>
+        <div class="commit-example good">test(his): agregar tests unitarios para servicio de pacientes</div>
+        <div class="commit-example good">test(rcf): agregar test de integracion para flujo de aprobacion</div>
+        <div class="commit-example bad">add tests</div>
+      </div>
+
+      <!-- chore -->
+      <div class="tab-panel" data-tab-panel="chore">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">chore</strong> &mdash; Tareas de mantenimiento. Actualizar dependencias, configuraciones, herramientas internas.</p>
+        <div class="commit-example good">chore(deps): actualizar express a v4.18.2</div>
+        <div class="commit-example good">chore(citapp): configurar prettier y eslint rules</div>
+        <div class="commit-example bad">update packages</div>
+      </div>
+
+      <!-- ci -->
+      <div class="tab-panel" data-tab-panel="ci">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">ci</strong> &mdash; Cambios en pipelines de CI/CD. GitHub Actions, workflows, Dockerfiles de build.</p>
+        <div class="commit-example good">ci(his): agregar stage de pruebas de seguridad al pipeline</div>
+        <div class="commit-example good">ci(rcf): configurar deploy automatico a staging en merge a develop</div>
+        <div class="commit-example bad">fix pipeline</div>
+      </div>
+
+      <!-- perf -->
+      <div class="tab-panel" data-tab-panel="perf">
+        <p style="margin-bottom:14px;color:var(--text-muted)"><strong style="color:var(--text)">perf</strong> &mdash; Mejora de rendimiento. El comportamiento no cambia pero es mas rapido o usa menos recursos.</p>
+        <div class="commit-example good">perf(costos): agregar indice a tabla de movimientos por fecha</div>
+        <div class="commit-example good">perf(citapp): cachear consulta de horarios disponibles</div>
+        <div class="commit-example bad">improve performance</div>
+      </div>
+    </div>
+
+    <!-- Format reference -->
+    <div class="format-box">
+      <div class="format-label">Formato</div>
+      <code>tipo(scope): descripcion en minuscula sin punto</code>
+    </div>
+
+    <!-- Wrong vs Right -->
+    <div class="wrong-right-grid mt-md">
+      <div class="col-wrong">
+        <div class="col-header">&#10060; Incorrecto</div>
+        <div class="commit-example bad">update code</div>
+        <div class="commit-example bad">fix bug</div>
+        <div class="commit-example bad">cambios varios</div>
+      </div>
+      <div class="col-right">
+        <div class="col-header">&#9989; Correcto</div>
+        <div class="commit-example good">feat(auth): agregar login con SSO</div>
+        <div class="commit-example good">fix(costos): corregir calculo de redondeo</div>
+        <div class="commit-example good">docs(api): documentar endpoint de pacientes</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION C: CREAR UN PR DESDE GITHUB WEB
+       ============================ -->
+  <section id="sec-create-pr">
+    <div class="section-header">
+      <h2><span class="num">4</span> Crear un PR desde GitHub Web</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/templates-de-pull-request-pviamUWJWW" target="_blank" rel="noopener">Templates de PR &rarr;</a>
+        <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/reglas-de-aprobacion-por-tipo-de-cambio-ogBrpISbyf" target="_blank" rel="noopener">Reglas de aprobacion &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Step 1: Push -->
+    <div class="pr-step-card">
+      <div class="pr-step-title">
+        <span class="pr-step-number">1</span> Haz push de tu branch
+      </div>
+      <div class="code-copyable">
+        <button class="copy-btn" onclick="copyCmd(this)" data-cmd="git push -u origin feature/3456-endpoint-citas">&#128203; Copiar</button>
+        git push -u origin feature/3456-endpoint-citas
+      </div>
+    </div>
+
+    <!-- Step 2: Yellow banner mockup -->
+    <div class="pr-step-card">
+      <div class="pr-step-title">
+        <span class="pr-step-number">2</span> Veras este banner en GitHub
+      </div>
+      <div class="gh-banner">
+        <span class="gh-banner-icon">&#127796;</span>
+        <div class="gh-banner-text">
+          <strong>feature/3456-endpoint-citas</strong> had recent pushes 2 minutes ago
+        </div>
+        <span class="gh-btn-green">Compare &amp; pull request</span>
+      </div>
+      <div class="pr-step-note">Este banner aparece automaticamente en la pagina del repo despues de hacer push.</div>
+    </div>
+
+    <!-- Step 3: PR form mockup -->
+    <div class="pr-step-card">
+      <div class="pr-step-title">
+        <span class="pr-step-number">3</span> Llena el formulario del PR
+      </div>
+      <div class="gh-pr-form">
+        <div class="gh-pr-form-header">
+          <h3>Open a pull request</h3>
+          <div class="gh-pr-form-branch-info">
+            base: develop &larr; compare: feature/3456-endpoint-citas
+          </div>
+        </div>
+        <div class="gh-pr-form-body">
+          <div class="gh-pr-form-main">
+            <input class="gh-input" type="text" value="feat: agregar endpoint de citas AB#3456" readonly>
+            <textarea class="gh-textarea" readonly>## Que hace este PR?
+Agrega el endpoint GET /api/citas que permite consultar
+citas por paciente con paginacion.
+
+## Task
+https://dev.azure.com/goecosystem/Go-Devops/_workitems/edit/3456
+
+## Tipo de cambio
+&#9745; Nueva funcionalidad (feature)
+&#9744; Correccion de bug (fix)
+&#9744; Refactorizacion
+&#9744; Documentacion
+&#9744; CI/CD
+
+## Como probarlo?
+1. Levantar con docker compose up -d
+2. GET localhost:8080/api/citas?paciente=123
+3. Verificar respuesta con paginacion
+
+## Checklist
+&#9745; Funciona en local
+&#9745; No rompe lo existente
+&#9745; Sin secrets ni logs de debug</textarea>
+            <span class="gh-btn-green">Create pull request</span>
+          </div>
+          <div class="gh-pr-form-sidebar">
+            <div class="gh-sidebar-section">
+              <div class="gh-sidebar-label">Reviewers</div>
+              <div class="gh-sidebar-value">@GoEcosystemDH/his-core</div>
+              <div class="gh-sidebar-note">Asignado automaticamente via CODEOWNERS</div>
+            </div>
+            <div class="gh-sidebar-section">
+              <div class="gh-sidebar-label">Labels</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+                <span class="pr-label feature">feature</span>
+                <span class="pr-label size">size/M</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Checks -->
+    <div class="pr-step-card">
+      <div class="pr-step-title">
+        <span class="pr-step-number">4</span> Espera la revision
+      </div>
+      <div class="gh-checks-list">
+        <div class="gh-check-row">
+          <span class="gh-check-icon" style="color:var(--green)">&#10003;</span>
+          <span class="gh-check-name"><strong>CI/CD Pipeline</strong></span>
+          <span class="gh-check-status">passed</span>
+        </div>
+        <div class="gh-check-row">
+          <span class="gh-check-icon" style="color:var(--green)">&#10003;</span>
+          <span class="gh-check-name"><strong>Build</strong></span>
+          <span class="gh-check-status">passed</span>
+        </div>
+        <div class="gh-check-row">
+          <span class="gh-check-icon" style="color:var(--orange)">&#9679;</span>
+          <span class="gh-check-name"><strong>Review required</strong></span>
+          <span class="gh-check-status">1 approval needed</span>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);font-size:14px;">Los checks automaticos se ejecutan solos. Tu solo necesitas esperar la revision de un compañero.</p>
+    </div>
+
+    <!-- Step 5: Merge -->
+    <div class="pr-step-card">
+      <div class="pr-step-title">
+        <span class="pr-step-number">5</span> Merge
+      </div>
+      <div class="gh-merge-area">
+        <span class="gh-btn-green">&#10003; Squash and merge</span>
+        <div class="gh-merge-text">
+          Despues del merge, la branch se elimina automaticamente y el pipeline despliega a staging/produccion.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 5 (old): PIPELINE CI/CD
+       ============================ -->
+  <section id="sec-pipeline">
+    <div class="section-header">
+      <h2><span class="num">5</span> Pipeline CI/CD</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/pipeline-ci-cd-reutilizable-xNe65Sxhog" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <div class="mermaid-container">
+      <pre class="mermaid">
+flowchart LR
+    PUSH["&#128256; Push / Merge"] --> BUILD["&#128296; Build"]
+    BUILD --> TEST["&#129514; Test"]
+    TEST --> STAGING["&#128993; Staging"]
+    STAGING --> APPROVAL{"&#128100; Approval"}
+    APPROVAL -->|Aprobado| PROD["&#128994; Produccion"]
+    APPROVAL -->|Rechazado| FIX["&#128295; Corregir"]
+    FIX --> PUSH
+      </pre>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="pipeline-table">
+        <thead>
+          <tr>
+            <th>Etapa</th>
+            <th>Que pasa</th>
+            <th>Quien lo hace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Build</strong></td>
+            <td>Se compila tu codigo y se crea una imagen Docker</td>
+            <td class="actor-robot">Robot (GitHub Actions)</td>
+          </tr>
+          <tr>
+            <td><strong>Test</strong></td>
+            <td>Se ejecutan pruebas automaticas (unit + integration)</td>
+            <td class="actor-robot">Robot</td>
+          </tr>
+          <tr>
+            <td><strong>Staging</strong></td>
+            <td>Se despliega en un ambiente de pruebas</td>
+            <td class="actor-robot">Robot</td>
+          </tr>
+          <tr>
+            <td><strong>Approval</strong></td>
+            <td>Alguien revisa que todo funcione en staging</td>
+            <td class="actor-human">Humano (tu lead)</td>
+          </tr>
+          <tr>
+            <td><strong>Produccion</strong></td>
+            <td>Tu codigo esta live para los usuarios</td>
+            <td class="actor-robot">Robot</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 6 (old): PULL REQUEST — COMO SE VE UNO BUENO
+       ============================ -->
+  <section id="sec-pr">
+    <div class="section-header">
+      <h2><span class="num">6</span> Pull Request &mdash; como se ve uno bueno</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/templates-de-pull-request-pviamUWJWW" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <!-- Mock PR -->
+    <div class="mock-pr mb-md">
+      <div class="mock-pr-header">
+        <div class="pr-state">&#9679; Open</div>
+        <div class="pr-title">feat: agregar endpoint de exportacion PDF AB#3456</div>
+        <div class="mock-pr-labels">
+          <span class="pr-label feature">feature</span>
+          <span class="pr-label size">size/M</span>
+        </div>
+      </div>
+      <div class="mock-pr-body">
+        <h4>Descripcion</h4>
+        <p>Implementa el endpoint <code>POST /api/v1/export/pdf</code> que genera reportes en PDF a partir de los datos de citas del paciente. Incluye validacion de parametros, tests unitarios y documentacion OpenAPI.</p>
+        <h4>Checklist</h4>
+        <ul>
+          <li><span class="check">&#10003;</span> Mis commits siguen Conventional Commits</li>
+          <li><span class="check">&#10003;</span> Agregue tests unitarios y de integracion</li>
+          <li><span class="check">&#10003;</span> La documentacion esta actualizada</li>
+          <li><span class="check">&#10003;</span> No hay secretos hardcodeados en el codigo</li>
+          <li><span class="check">&#10003;</span> Probe localmente que funciona</li>
+        </ul>
+      </div>
+      <div class="mock-pr-footer">
+        <span class="pr-badge approved">&#10003; 1 approval</span>
+        <span class="pr-badge checks">&#10003; All checks passing</span>
+      </div>
+    </div>
+
+    <!-- Approval rules -->
+    <p style="color:var(--text-muted);margin-bottom:14px;font-size:14px;">Reglas de aprobacion segun tipo de cambio:</p>
+    <div class="approval-cards">
+      <div class="approval-card">
+        <div class="card-type">Feature normal</div>
+        <div class="card-rule">1 approval</div>
+      </div>
+      <div class="approval-card">
+        <div class="card-type">Cambio de arquitectura</div>
+        <div class="card-rule">2 approvals</div>
+      </div>
+      <div class="approval-card">
+        <div class="card-type">Hotfix critico</div>
+        <div class="card-rule">1 approval (SLA: 4h)</div>
+      </div>
+      <div class="approval-card">
+        <div class="card-type">Solo documentacion</div>
+        <div class="card-rule">1 approval</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/reglas-de-aprobacion-por-tipo-de-cambio-ogBrpISbyf" target="_blank" rel="noopener">Reglas de aprobacion &rarr;</a>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/checklist-de-code-review-w0NWltXEgI" target="_blank" rel="noopener">Checklist de Code Review &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION D: GITHUB DESKTOP — GUIA RAPIDA
+       ============================ -->
+  <section id="sec-gh-desktop">
+    <div class="section-header">
+      <h2>&#128421; GitHub Desktop &mdash; Guia Rapida</h2>
+    </div>
+
+    <!-- Callout -->
+    <div class="ghd-callout">
+      <span class="ghd-callout-icon">&#128161;</span>
+      <div>Prefieres clicks en vez de terminal? <strong>GitHub Desktop</strong> es una app gratuita que te permite hacer branches, commits y push sin escribir comandos.</div>
+    </div>
+
+    <!-- Download bar -->
+    <a href="https://desktop.github.com" target="_blank" rel="noopener" class="ghd-download-bar">
+      <span class="ghd-download-icon">&#11015;</span>
+      <div>
+        <div class="ghd-download-text">Descargar GitHub Desktop</div>
+        <div class="ghd-download-sub">desktop.github.com &mdash; Windows y macOS</div>
+      </div>
+    </a>
+
+    <!-- Setup in 3 steps -->
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Configuracion inicial</h3>
+
+    <div class="ghd-setup-steps">
+      <!-- Setup 1: Sign in -->
+      <div class="ghd-setup-step">
+        <div class="ghd-step-num">1</div>
+        <div class="ghd-step-content">
+          <div class="ghd-step-title">Iniciar sesion</div>
+          <div class="ghd-app-frame">
+            <div class="ghd-titlebar">
+              <div class="ghd-traffic-lights">
+                <div class="ghd-traffic-light ghd-tl-red"></div>
+                <div class="ghd-traffic-light ghd-tl-yellow"></div>
+                <div class="ghd-traffic-light ghd-tl-green"></div>
+              </div>
+              <span class="ghd-titlebar-text">GitHub Desktop</span>
+            </div>
+            <div class="ghd-app-body" style="text-align:center;padding:24px 20px;">
+              <div class="ghd-welcome-title">Welcome to GitHub Desktop</div>
+              <div class="ghd-mock-btn blue">Sign in to GitHub.com</div>
+              <div class="ghd-mock-note">Usa tu cuenta de GitHub (la misma de GoEcosystemDH)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup 2: Clone -->
+      <div class="ghd-setup-step">
+        <div class="ghd-step-num">2</div>
+        <div class="ghd-step-content">
+          <div class="ghd-step-title">Clonar tu repo</div>
+          <div class="ghd-app-frame">
+            <div class="ghd-titlebar">
+              <div class="ghd-traffic-lights">
+                <div class="ghd-traffic-light ghd-tl-red"></div>
+                <div class="ghd-traffic-light ghd-tl-yellow"></div>
+                <div class="ghd-traffic-light ghd-tl-green"></div>
+              </div>
+              <span class="ghd-titlebar-text">Clone a Repository</span>
+            </div>
+            <div class="ghd-menu-bar">
+              <span>URL</span>
+              <span class="active-menu">GitHub.com</span>
+            </div>
+            <div class="ghd-clone-body">
+              <input class="ghd-filter-input" type="text" value="GoEcosystemDH" readonly>
+              <ul class="ghd-repo-list">
+                <li class="selected">GoEcosystemDH/his-api</li>
+                <li>GoEcosystemDH/rcf-app</li>
+                <li>GoEcosystemDH/costos-web</li>
+              </ul>
+              <div class="ghd-path-row">
+                Local Path: <code>/Users/tu-usuario/Documents/GOE/his-api</code>
+              </div>
+              <div class="ghd-mock-btn blue" style="display:inline-block;margin:0;">Clone</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup 3: Identity -->
+      <div class="ghd-setup-step">
+        <div class="ghd-step-num">3</div>
+        <div class="ghd-step-content">
+          <div class="ghd-step-title">Configurar identidad</div>
+          <div class="ghd-app-frame">
+            <div class="ghd-titlebar">
+              <div class="ghd-traffic-lights">
+                <div class="ghd-traffic-light ghd-tl-red"></div>
+                <div class="ghd-traffic-light ghd-tl-yellow"></div>
+                <div class="ghd-traffic-light ghd-tl-green"></div>
+              </div>
+              <span class="ghd-titlebar-text">Preferences &rsaquo; Git</span>
+            </div>
+            <div class="ghd-app-body">
+              <div style="margin-bottom:12px;">
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Name</div>
+                <input class="ghd-filter-input" type="text" value="GoCarlosAndresSanchez" readonly style="margin-bottom:0;">
+              </div>
+              <div style="margin-bottom:12px;">
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Email</div>
+                <input class="ghd-filter-input" type="text" value="tu.email@goecosystemdh.com" readonly style="margin-bottom:0;">
+              </div>
+              <div class="ghd-mock-note" style="text-align:left;">Esto es lo que aparece en tus commits</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily workflow in 5 visual steps -->
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:20px;">Flujo diario en 5 pasos</h3>
+
+    <div class="ghd-flow-steps">
+      <!-- Flow 1: Update develop -->
+      <div class="ghd-flow-step">
+        <div class="ghd-flow-num">1</div>
+        <div class="ghd-flow-title">Actualizar develop</div>
+        <div class="ghd-app-frame" style="margin-bottom:8px;">
+          <div class="ghd-toolbar">
+            <div class="ghd-toolbar-section">&#127796; develop</div>
+            <div class="ghd-toolbar-btn blue">Fetch origin</div>
+          </div>
+        </div>
+        <div class="ghd-flow-desc">Siempre empieza actualizando develop</div>
+      </div>
+
+      <!-- Flow 2: Create branch -->
+      <div class="ghd-flow-step">
+        <div class="ghd-flow-num">2</div>
+        <div class="ghd-flow-title">Crear branch</div>
+        <div class="ghd-app-frame" style="margin-bottom:8px;">
+          <div class="ghd-app-body" style="padding:10px 14px;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:6px;">Name:</div>
+            <input class="ghd-filter-input" type="text" value="feature/3456-endpoint-citas" readonly style="margin-bottom:4px;">
+            <div style="font-size:11px;color:var(--text-dim);">from: develop</div>
+          </div>
+        </div>
+        <div class="ghd-flow-desc">Crea tu branch de trabajo</div>
+      </div>
+
+      <!-- Flow 3: Changes + commit -->
+      <div class="ghd-flow-step">
+        <div class="ghd-flow-num">3</div>
+        <div class="ghd-flow-title">Commit</div>
+        <div class="ghd-app-frame" style="margin-bottom:8px;">
+          <div class="ghd-app-body" style="padding:10px 14px;">
+            <div class="ghd-file-item" style="margin-bottom:4px;">
+              <span class="ghd-checkbox">&#10003;</span>
+              <span class="ghd-file-name" style="font-size:11px;">citas-service.ts</span>
+              <span class="ghd-file-badge modified">M</span>
+            </div>
+            <input class="ghd-commit-msg-input" type="text" value="feat: agregar endpoint de citas AB#3456" readonly style="font-size:11px;padding:5px 8px;margin-bottom:4px;">
+            <div class="ghd-mock-btn blue" style="display:block;font-size:11px;padding:5px 10px;margin:0;">Commit</div>
+          </div>
+        </div>
+        <div class="ghd-flow-desc">Marca archivos, escribe mensaje con formato conventional, commit</div>
+      </div>
+
+      <!-- Flow 4: Push -->
+      <div class="ghd-flow-step">
+        <div class="ghd-flow-num">4</div>
+        <div class="ghd-flow-title">Push</div>
+        <div class="ghd-app-frame" style="margin-bottom:8px;">
+          <div class="ghd-toolbar">
+            <div class="ghd-toolbar-btn blue">Push origin</div>
+          </div>
+        </div>
+        <div class="ghd-flow-desc">Sube tus cambios a GitHub</div>
+      </div>
+
+      <!-- Flow 5: Create PR -->
+      <div class="ghd-flow-step">
+        <div class="ghd-flow-num">5</div>
+        <div class="ghd-flow-title">Crear PR</div>
+        <div class="ghd-app-frame" style="margin-bottom:8px;">
+          <div class="ghd-toolbar">
+            <div class="ghd-toolbar-btn blue">Create Pull Request</div>
+          </div>
+        </div>
+        <div class="ghd-flow-desc">Se abre GitHub web donde llenas el template del PR</div>
+      </div>
+    </div>
+
+    <!-- Comparison table: Terminal vs GitHub Desktop -->
+    <h3 style="font-size:18px;font-weight:600;margin-bottom:4px;">Terminal vs GitHub Desktop</h3>
+    <div style="overflow-x:auto;">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Accion</th>
+            <th>Terminal</th>
+            <th>GitHub Desktop</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Actualizar develop</td>
+            <td><code>git checkout develop && git pull</code></td>
+            <td>Current Branch &rarr; develop &rarr; Fetch origin</td>
+          </tr>
+          <tr>
+            <td>Crear branch</td>
+            <td><code>git checkout -b feature/x</code></td>
+            <td>Branch &rarr; New Branch</td>
+          </tr>
+          <tr>
+            <td>Commit</td>
+            <td><code>git add . && git commit -m "feat: ..."</code></td>
+            <td>Check files &rarr; Write message &rarr; Commit</td>
+          </tr>
+          <tr>
+            <td>Push</td>
+            <td><code>git push -u origin feature/x</code></td>
+            <td>Push origin</td>
+          </tr>
+          <tr>
+            <td>Crear PR</td>
+            <td><code>gh pr create</code></td>
+            <td>Create Pull Request (abre web)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;">
+      <a class="wiki-pill" href="https://desktop.github.com" target="_blank" rel="noopener">Descargar GitHub Desktop &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 7: COMANDOS
+       ============================ -->
+  <section id="sec-commands">
+    <div class="section-header">
+      <h2><span class="num">7</span> Comandos del dia a dia</h2>
+      <a class="wiki-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/cheat-sheet-comandos-del-dia-a-dia-NIm9iIqr6Y" target="_blank" rel="noopener">Norma completa en la Wiki &rarr;</a>
+    </div>
+
+    <div class="cmd-scenarios">
+      <!-- Empezar a trabajar -->
+      <div class="cmd-scenario">
+        <div class="cmd-scenario-header">&#128161; Empezar a trabajar</div>
+        <div class="cmd-scenario-body">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd="git checkout develop
+git pull origin develop
+git checkout -b feature/mi-tarea">&#128203; Copiar</button>
+          <pre><span style="color:var(--text-dim)"># Actualizar develop y crear tu branch</span>
+git checkout develop
+git pull origin develop
+git checkout -b feature/mi-tarea</pre>
+        </div>
+      </div>
+
+      <!-- Guardar mi trabajo -->
+      <div class="cmd-scenario">
+        <div class="cmd-scenario-header">&#128190; Guardar mi trabajo</div>
+        <div class="cmd-scenario-body">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd='git add src/mi-archivo.ts
+git commit -m "feat(modulo): descripcion del cambio AB#1234"'>&#128203; Copiar</button>
+          <pre><span style="color:var(--text-dim)"># Agregar archivos y hacer commit con formato correcto</span>
+git add src/mi-archivo.ts
+git commit -m "feat(modulo): descripcion del cambio AB#1234"</pre>
+        </div>
+      </div>
+
+      <!-- Pedir revision -->
+      <div class="cmd-scenario">
+        <div class="cmd-scenario-header">&#128640; Pedir revision</div>
+        <div class="cmd-scenario-body">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd='git push -u origin feature/mi-tarea
+gh pr create --base develop --title "feat: mi cambio AB#1234" --fill'>&#128203; Copiar</button>
+          <pre><span style="color:var(--text-dim)"># Subir tu branch y crear el PR</span>
+git push -u origin feature/mi-tarea
+gh pr create --base develop --title "feat: mi cambio AB#1234" --fill</pre>
+        </div>
+      </div>
+
+      <!-- Despues del merge -->
+      <div class="cmd-scenario">
+        <div class="cmd-scenario-header">&#9989; Despues del merge</div>
+        <div class="cmd-scenario-body">
+          <button class="copy-btn" onclick="copyCmd(this)" data-cmd="git checkout develop
+git pull origin develop
+git branch -d feature/mi-tarea">&#128203; Copiar</button>
+          <pre><span style="color:var(--text-dim)"># Volver a develop y limpiar tu branch local</span>
+git checkout develop
+git pull origin develop
+git branch -d feature/mi-tarea</pre>
+        </div>
+      </div>
+
+      <!-- Si usas GitHub Desktop -->
+      <div class="cmd-scenario">
+        <div class="cmd-scenario-header">&#128421; Si usas GitHub Desktop</div>
+        <div class="cmd-scenario-body">
+          <p style="font-size:14px;color:var(--text-muted);margin-bottom:8px;">
+            No necesitas estos comandos si prefieres la interfaz grafica. Consulta la seccion
+            <a href="#sec-gh-desktop">GitHub Desktop &mdash; Guia Rapida</a> mas arriba para ver el equivalente visual de cada accion.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================
+       SECTION 8: FOOTER — WIKI LINKS
+       ============================ -->
+  <section id="sec-footer">
+    <div class="section-header">
+      <h2>&#128218; Necesitas mas detalle?</h2>
+    </div>
+
+    <div class="footer-grid">
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/cap-1-preparar-tu-entorno-1DmkIUK7cp" target="_blank" rel="noopener">
+        <div class="card-chapter">Cap 1</div>
+        <div class="card-title">Preparar tu Entorno</div>
+      </a>
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/cap-2-tu-dia-a-dia-TNyuBjk7Gs" target="_blank" rel="noopener">
+        <div class="card-chapter">Cap 2</div>
+        <div class="card-title">Tu Dia a Dia</div>
+      </a>
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/cap-3-git-y-branches-5VZ1mJ6bR7" target="_blank" rel="noopener">
+        <div class="card-chapter">Cap 3</div>
+        <div class="card-title">Git y Branches</div>
+      </a>
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/cap-4-code-review-y-calidad-DNC458Efla" target="_blank" rel="noopener">
+        <div class="card-chapter">Cap 4</div>
+        <div class="card-title">Code Review y Calidad</div>
+      </a>
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/cap-5-ci-cd-y-despliegues-FJjFiyUMzX" target="_blank" rel="noopener">
+        <div class="card-chapter">Cap 5</div>
+        <div class="card-title">CI/CD y Despliegues</div>
+      </a>
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/cap-6-seguridad-DAhJ9UXEO8" target="_blank" rel="noopener">
+        <div class="card-chapter">Cap 6</div>
+        <div class="card-title">Seguridad</div>
+      </a>
+      <a class="footer-link-card" href="https://wiki.goecosystemdh.com/s/onboarding/p/preguntas-frecuentes-oT901E42i8" target="_blank" rel="noopener">
+        <div class="card-chapter">FAQ</div>
+        <div class="card-title">Preguntas Frecuentes</div>
+      </a>
+    </div>
+
+    <nav class="footer-nav">
+      <a href="../index.html">&larr; Portal</a>
+      <a href="../homologacion/index.html">Tabla de Homologacion &rarr;</a>
+    </nav>
+  </section>
+
+</div><!-- .page-wrapper -->
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+  /* ----------------------------------------------------------
+     Mermaid Init
+     ---------------------------------------------------------- */
+  mermaid.initialize({
+    theme: 'dark',
+    startOnLoad: true,
+    gitGraph: { showCommitLabel: true, mainBranchName: 'main' },
+    flowchart: { curve: 'basis', padding: 16 }
+  });
+
+  /* ----------------------------------------------------------
+     Section 1: Stepper
+     ---------------------------------------------------------- */
+  var currentStep = 0;
+  var totalSteps = 6;
+
+  function goToStep(step) {
+    if (step < 0 || step >= totalSteps) return;
+    currentStep = step;
+    renderStepper();
+  }
+
+  function renderStepper() {
+    var dots = document.querySelectorAll('#stepperProgress .step-dot');
+    var lines = document.querySelectorAll('#stepperProgress .step-line');
+    var panels = document.querySelectorAll('.step-panel');
+
+    dots.forEach(function(dot, i) {
+      dot.className = 'step-dot';
+      if (i < currentStep) dot.classList.add('completed');
+      else if (i === currentStep) dot.classList.add('active');
+      else dot.classList.add('future');
+    });
+
+    lines.forEach(function(line, i) {
+      line.className = 'step-line';
+      if (i < currentStep) line.classList.add('completed');
+    });
+
+    panels.forEach(function(panel, i) {
+      panel.classList.toggle('active', i === currentStep);
+    });
+  }
+
+  /* ----------------------------------------------------------
+     Section A: Conectar Repo Tabs
+     ---------------------------------------------------------- */
+  function switchRepoTab(tab) {
+    var btns = document.querySelectorAll('#repoTabs .repo-tab-btn');
+    var panels = document.querySelectorAll('.repo-tab-panel');
+
+    btns.forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-repo-tab') === tab);
+    });
+
+    panels.forEach(function(panel) {
+      panel.classList.toggle('active', panel.getAttribute('data-repo-panel') === tab);
+    });
+  }
+
+  /* ----------------------------------------------------------
+     Section 2: Branch Legend
+     ---------------------------------------------------------- */
+  var activeLegend = null;
+
+  function toggleLegend(branch) {
+    var pills = document.querySelectorAll('.legend-pill');
+    var descs = document.querySelectorAll('.legend-desc');
+
+    if (activeLegend === branch) {
+      activeLegend = null;
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      descs.forEach(function(d) { d.classList.remove('active'); });
+      return;
+    }
+
+    activeLegend = branch;
+
+    pills.forEach(function(p) {
+      p.classList.toggle('active', p.getAttribute('data-branch') === branch);
+    });
+
+    descs.forEach(function(d) {
+      d.classList.toggle('active', d.id === 'legend-' + branch);
+    });
+  }
+
+  /* ----------------------------------------------------------
+     Section 3: Commit Tabs
+     ---------------------------------------------------------- */
+  function switchTab(tab) {
+    var btns = document.querySelectorAll('#commitTabs .tab-btn');
+    var panels = document.querySelectorAll('.tab-panel');
+
+    btns.forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+    });
+
+    panels.forEach(function(panel) {
+      panel.classList.toggle('active', panel.getAttribute('data-tab-panel') === tab);
+    });
+  }
+
+  /* ----------------------------------------------------------
+     Copy to Clipboard
+     ---------------------------------------------------------- */
+  function copyCmd(button) {
+    var text = button.getAttribute('data-cmd');
+    navigator.clipboard.writeText(text).then(function() {
+      button.classList.add('copied');
+      var original = button.textContent;
+      button.textContent = '\u2713 Copiado!';
+      setTimeout(function() {
+        button.classList.remove('copied');
+        button.innerHTML = '&#128203; Copiar';
+      }, 1500);
+    }).catch(function() {
+      /* Fallback for older browsers */
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      button.innerHTML = '&#10003; Copiado!';
+      setTimeout(function() {
+        button.innerHTML = '&#128203; Copiar';
+      }, 1500);
+    });
+  }
+</script>
+
+</body>
+</html>

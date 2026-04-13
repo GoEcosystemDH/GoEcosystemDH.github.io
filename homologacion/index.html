@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabla de Homologacion — GoEcosystemDH</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #8b949e;
+    margin-bottom: 28px;
+  }
+  .breadcrumb a { color: #58a6ff; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  /* Header */
+  h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #58a6ff, #3fb950);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    color: #8b949e;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  /* Section headings */
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e6edf3;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+  h2:first-of-type { margin-top: 0; }
+
+  /* Paragraphs */
+  p { margin-bottom: 12px; font-size: 14px; }
+
+  /* Stat cards */
+  .stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 20px 24px;
+    text-align: center;
+    flex: 1;
+    min-width: 130px;
+  }
+  .stat-card .num {
+    font-size: 32px;
+    font-weight: 800;
+    color: #58a6ff;
+  }
+  .stat-card .num.green { color: #3fb950; }
+  .stat-card .num.orange { color: #d29922; }
+  .stat-card .lbl {
+    font-size: 11px;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* Callout boxes */
+  .callout {
+    border-left: 4px solid #d29922;
+    background: rgba(210, 153, 34, .08);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #e6edf3;
+  }
+  .callout-blue {
+    border-left: 4px solid #58a6ff;
+    background: rgba(88, 166, 255, .08);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #e6edf3;
+  }
+  .callout-green {
+    border-left: 4px solid #3fb950;
+    background: rgba(63, 185, 80, .08);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #e6edf3;
+  }
+  .callout strong { color: #e6edf3; }
+
+  /* Tabs */
+  .tabs {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  .tab-nav {
+    display: flex;
+    border-bottom: 1px solid #30363d;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: #8b949e;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s, background .15s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: #e6edf3; background: rgba(88, 166, 255, .05); }
+  .tab-btn.active {
+    color: #58a6ff;
+    border-bottom-color: #58a6ff;
+    background: rgba(88, 166, 255, .08);
+  }
+  .tab-panel {
+    display: none;
+    padding: 24px 28px;
+  }
+  .tab-panel.active { display: block; }
+  .tab-panel .panel-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e6edf3;
+    margin-bottom: 8px;
+  }
+  .tab-panel .panel-desc {
+    font-size: 13px;
+    color: #8b949e;
+    margin-bottom: 14px;
+  }
+
+  /* Code blocks */
+  .code-wrap {
+    position: relative;
+    margin: 6px 0;
+  }
+  pre {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 12px 48px 12px 16px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 13px;
+    color: #e6edf3;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  pre .comment { color: #8b949e; }
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #21262d;
+    border: 1px solid #30363d;
+    color: #8b949e;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: color .15s, background .15s;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .copy-btn:hover { color: #e6edf3; background: #30363d; }
+  .copy-btn.copied { color: #3fb950; }
+
+  /* Links section */
+  .links-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0 8px;
+  }
+  .link-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(88, 166, 255, .1);
+    border: 1px solid rgba(88, 166, 255, .25);
+    color: #58a6ff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .link-pill:hover {
+    background: rgba(88, 166, 255, .2);
+    text-decoration: none;
+  }
+
+  /* Search */
+  .search-wrap {
+    margin: 16px 0;
+    position: relative;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #484f58;
+    pointer-events: none;
+  }
+  #repo-search {
+    width: 100%;
+    padding: 10px 16px 10px 40px;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    color: #e6edf3;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s;
+  }
+  #repo-search::placeholder { color: #484f58; }
+  #repo-search:focus { border-color: #58a6ff; }
+  .search-count {
+    font-size: 12px;
+    color: #8b949e;
+    margin-top: 6px;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    background: #161b22;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #e6edf3;
+    position: sticky;
+    top: 0;
+    border-bottom: 2px solid #30363d;
+    white-space: nowrap;
+  }
+  th .th-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #30363d;
+    color: #8b949e;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    flex-shrink: 0;
+    border: none;
+    font-family: inherit;
+    line-height: 1;
+  }
+  .tooltip-icon:hover { background: #484f58; color: #e6edf3; }
+  .tooltip-box {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    background: #1c2128;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #c9d1d9;
+    max-width: 280px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    line-height: 1.5;
+    white-space: normal;
+  }
+  .tooltip-box.visible { display: block; }
+  td {
+    padding: 8px 12px;
+    color: #c9d1d9;
+    border-bottom: 1px solid #21262d;
+  }
+  tr:hover td { background: #161b22; }
+  tbody tr:last-child td { border-bottom: none; }
+  .no-results {
+    text-align: center;
+    padding: 24px;
+    color: #8b949e;
+    font-size: 14px;
+    display: none;
+  }
+
+  /* Links */
+  a { color: #58a6ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Badges */
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .b-green { background: rgba(63, 185, 80, .15); color: #3fb950; }
+  .b-gray { background: rgba(139, 148, 158, .1); color: #484f58; }
+
+  /* Collapsible */
+  details { margin: 16px 0; }
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: #58a6ff;
+    padding: 10px 0;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "\25B6";
+    display: inline-block;
+    margin-right: 8px;
+    font-size: 11px;
+    transition: transform .2s;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  summary:hover { text-decoration: underline; }
+
+  /* Bullet lists */
+  .bullet-list {
+    list-style: disc;
+    padding-left: 24px;
+    font-size: 14px;
+    margin: 8px 0;
+  }
+  .bullet-list li { margin-bottom: 6px; }
+
+  /* Mermaid chart */
+  .chart-section {
+    margin: 24px 0;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+  .mermaid svg {
+    max-width: 100%;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid #30363d;
+    color: #484f58;
+    font-size: 12px;
+  }
+  .footer a { color: #58a6ff; }
+  .footer-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .footer-nav a {
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .stats { flex-direction: column; }
+    .container { padding: 20px 16px 36px; }
+    h1 { font-size: 22px; }
+    pre { font-size: 12px; }
+    .tab-btn { font-size: 12px; padding: 10px 12px; }
+    .footer-nav { flex-direction: column; gap: 8px; align-items: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="../">Portal</a>
+    <span>/</span>
+    <span>Tabla de Homologacion</span>
+  </nav>
+
+  <!-- Header -->
+  <h1>Tabla de Homologacion &mdash; &iquest;Donde esta mi repo ahora?</h1>
+  <p class="subtitle">Mapeo GitLab &rarr; GitHub &mdash; Migracion 2026</p>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 1: Que paso -->
+  <!-- ============================================================ -->
+  <h2>&iquest;Que paso con los repositorios?</h2>
+
+  <p>Migramos los repositorios activos de GitLab a GitHub. Tu codigo, historial de commits y branches se conservaron intactos.</p>
+  <p>Busca tu repo en la tabla de abajo para ver su nuevo nombre y enlace directo en GitHub.</p>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num green">37</div>
+      <div class="lbl">Repos Migrados</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">24</div>
+      <div class="lbl">Pipelines CI/CD</div>
+    </div>
+    <div class="stat-card">
+      <div class="num orange">54</div>
+      <div class="lbl">Archivo Historico</div>
+    </div>
+  </div>
+
+  <!-- Mermaid pie chart -->
+  <div class="chart-section">
+    <pre class="mermaid">
+    %%{init: {'theme': 'dark', 'themeVariables': { 'pie1': '#3fb950', 'pie2': '#d29922', 'pieTitleTextColor': '#e6edf3', 'pieSectionTextColor': '#e6edf3', 'pieLegendTextColor': '#c9d1d9', 'pieOuterStrokeColor': '#30363d' }}}%%
+    pie title Estado de Migracion
+      "Migrados (37)" : 37
+      "Archivo historico (54)" : 54
+    </pre>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 2: Que necesito hacer (Tabs) -->
+  <!-- ============================================================ -->
+  <h2>&iquest;Que necesito hacer?</h2>
+
+  <div class="tabs">
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-clone-existing">Ya tenia el repo clonado</button>
+      <button class="tab-btn" data-tab="tab-first-time">Es mi primera vez</button>
+      <button class="tab-btn" data-tab="tab-find-repo">No se cual es mi repo</button>
+    </div>
+
+    <!-- Tab 1: Already had the repo cloned from GitLab -->
+    <div id="tab-clone-existing" class="tab-panel active">
+      <div class="panel-title">Actualiza el remote de tu clon local</div>
+      <div class="panel-desc">Esto le dice a Git que ahora el codigo vive en GitHub. No pierdes nada local.</div>
+      <div class="code-wrap">
+        <pre>git remote set-url origin https://github.com/GoEcosystemDH/<span class="comment">NOMBRE-REPO</span>.git</pre>
+        <button class="copy-btn" aria-label="Copiar comando">Copiar</button>
+      </div>
+      <div class="panel-desc" style="margin-top: 14px;">Verifica que apunta al lugar correcto:</div>
+      <div class="code-wrap">
+        <pre>git remote -v
+<span class="comment"># Deberia mostrar:
+# origin  https://github.com/GoEcosystemDH/NOMBRE-REPO.git (fetch)
+# origin  https://github.com/GoEcosystemDH/NOMBRE-REPO.git (push)</span></pre>
+        <button class="copy-btn" aria-label="Copiar comando">Copiar</button>
+      </div>
+      <p style="font-size:13px; color:#8b949e; margin-top: 12px;">Reemplaza <code style="color:#d29922">NOMBRE-REPO</code> con el nombre que aparece en la columna "Repo GitHub" de la tabla.</p>
+    </div>
+
+    <!-- Tab 2: First time with this repo -->
+    <div id="tab-first-time" class="tab-panel">
+      <div class="panel-title">Clona directamente desde GitHub</div>
+      <div class="panel-desc">Si nunca has trabajado con este repo, solo necesitas clonarlo.</div>
+      <div class="code-wrap">
+        <pre>git clone https://github.com/GoEcosystemDH/<span class="comment">NOMBRE-REPO</span>.git</pre>
+        <button class="copy-btn" aria-label="Copiar comando">Copiar</button>
+      </div>
+      <p style="font-size:13px; color:#8b949e; margin-top: 12px;">Reemplaza <code style="color:#d29922">NOMBRE-REPO</code> con el nombre que aparece en la columna "Repo GitHub" de la tabla.</p>
+    </div>
+
+    <!-- Tab 3: Don't know which repo -->
+    <div id="tab-find-repo" class="tab-panel">
+      <div class="panel-title">Busca tu repo en la tabla</div>
+      <div class="panel-desc">Usa el buscador de la tabla de abajo para encontrar tu repositorio por nombre (GitLab o GitHub).</div>
+      <p style="font-size:13px;">
+        <a href="#repo-table-section" style="font-weight: 600;">Ir a la tabla de repositorios migrados</a> y escribe el nombre que recuerdes en el campo de busqueda. La tabla filtra en tiempo real.
+      </p>
+    </div>
+  </div>
+
+  <div class="callout-green">
+    <strong>Siguiente paso:</strong> una vez actualizado el remote, revisa la guia completa y el checklist para asegurarte de que todo funciona bien.
+  </div>
+
+  <div class="links-row">
+    <a class="link-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/configuracion-del-entorno-oVSEjUzXB4">Configuracion del Entorno</a>
+    <a class="link-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/checklist-de-validacion-post-migracion-ZVRX3eZMfE">Checklist Post-Migracion</a>
+    <a class="link-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/flujo-de-trabajo-QAw78oyzDK">Flujo de Trabajo</a>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 3: Tabla de 37 repos migrados -->
+  <!-- ============================================================ -->
+  <h2 id="repo-table-section">Repositorios Migrados (37)</h2>
+
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04Z"/></svg>
+    <input type="text" id="repo-search" placeholder="Buscar por nombre de repo (GitLab o GitHub)..." autocomplete="off">
+    <div class="search-count" id="search-count"></div>
+  </div>
+
+  <div class="table-wrap">
+  <table id="repo-table">
+  <thead>
+  <tr>
+    <th title="El nombre original que tenia el repositorio en GitLab.">
+      <span class="th-inner">Repo GitLab <button class="tooltip-icon" data-tooltip="tooltip-gitlab" aria-label="Explicacion">?</button></span>
+      <div class="tooltip-box" id="tooltip-gitlab">El nombre original que tenia el repositorio en GitLab antes de la migracion.</div>
+    </th>
+    <th title="El nuevo nombre en GitHub. Haz click en el enlace para ir directamente al repo.">
+      <span class="th-inner">Repo GitHub <button class="tooltip-icon" data-tooltip="tooltip-github" aria-label="Explicacion">?</button></span>
+      <div class="tooltip-box" id="tooltip-github">El nuevo nombre en GitHub. Haz click en el enlace para ir directamente al repositorio.</div>
+    </th>
+    <th title="La rama principal del proyecto (main, master, develop, etc.).">
+      <span class="th-inner">Rama <button class="tooltip-icon" data-tooltip="tooltip-rama" aria-label="Explicacion">?</button></span>
+      <div class="tooltip-box" id="tooltip-rama">La rama principal del proyecto (main, master, develop, etc.).</div>
+    </th>
+    <th title="Si = el repo tenia un pipeline CI/CD en GitLab. No = no tenia pipeline.">
+      <span class="th-inner">Pipeline <button class="tooltip-icon" data-tooltip="tooltip-pipeline" aria-label="Explicacion">?</button></span>
+      <div class="tooltip-box" id="tooltip-pipeline"><strong>Si</strong> = el repo tenia un proceso automatico de compilacion o despliegue (CI/CD) en GitLab.<br><strong>No</strong> = no tenia pipeline.</div>
+    </th>
+    <th title="Si = el pipeline CI/CD ya funciona en GitHub Actions. No = aun se esta migrando o no aplica.">
+      <span class="th-inner">CI/CD Migrado <button class="tooltip-icon" data-tooltip="tooltip-cicd" aria-label="Explicacion">?</button></span>
+      <div class="tooltip-box" id="tooltip-cicd"><strong>Si</strong> = ese proceso automatico ya funciona en GitHub Actions.<br><strong>No</strong> = aun se esta migrando o no aplica.</div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr><td>admin_referencia</td><td><a href="https://github.com/GoEcosystemDH/admin-referencia">admin-referencia</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>Android_RegistroClinicoVoz</td><td><a href="https://github.com/GoEcosystemDH/rcf-app-android">rcf-app-android</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>API_RegistroClinicoVoz</td><td><a href="https://github.com/GoEcosystemDH/rcf-api">rcf-api</a></td><td>master</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>ApiSiesa</td><td><a href="https://github.com/GoEcosystemDH/his-backend-siesa">his-backend-siesa</a></td><td>master</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>apiWS</td><td><a href="https://github.com/GoEcosystemDH/api-chatbot-aigenda">api-chatbot-aigenda</a></td><td>developer</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>app_referencia</td><td><a href="https://github.com/GoEcosystemDH/referencia">referencia</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>AppCeroTramites</td><td><a href="https://github.com/GoEcosystemDH/cero-tramites-app">cero-tramites-app</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>appMipres</td><td><a href="https://github.com/GoEcosystemDH/app-mipres">app-mipres</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>AppRCF</td><td><a href="https://github.com/GoEcosystemDH/rcf-app">rcf-app</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>appric_v1</td><td><a href="https://github.com/GoEcosystemDH/app-ric">app-ric</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>Citapp 0 tramites</td><td><a href="https://github.com/GoEcosystemDH/citapp-cero-tramites">citapp-cero-tramites</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>citapp_v2</td><td><a href="https://github.com/GoEcosystemDH/citapp-cero-tramites-v2">citapp-cero-tramites-v2</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>cmi</td><td><a href="https://github.com/GoEcosystemDH/cuadro-mando-integral">cuadro-mando-integral</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>cmi_costos</td><td><a href="https://github.com/GoEcosystemDH/cuadro-mando-integral-app-costos">cuadro-mando-integral-app-costos</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>cmi_services</td><td><a href="https://github.com/GoEcosystemDH/cuadro-mando-integral-services">cuadro-mando-integral-services</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>costosapp_desarrollo</td><td><a href="https://github.com/GoEcosystemDH/costos-web">costos-web</a></td><td>master</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>Devops</td><td><a href="https://github.com/GoEcosystemDH/runners-gitlab">runners-gitlab</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>Docker</td><td><a href="https://github.com/GoEcosystemDH/docker-infra">docker-infra</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>gestionApp</td><td><a href="https://github.com/GoEcosystemDH/gestion-notificaciones-app">gestion-notificaciones-app</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>gestionar_wtp</td><td><a href="https://github.com/GoEcosystemDH/gestionar-bots-whatsapp">gestionar-bots-whatsapp</a></td><td>develop</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>gopdf</td><td><a href="https://github.com/GoEcosystemDH/go-pdf">go-pdf</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>HIS_OPEDALE_CIRUGIA</td><td><a href="https://github.com/GoEcosystemDH/his-frontend-cirugia">his-frontend-cirugia</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>HIS_Ospedale</td><td><a href="https://github.com/GoEcosystemDH/his-frontend-core">his-frontend-core</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>HIS_Ospedale_Services</td><td><a href="https://github.com/GoEcosystemDH/his-backend-core">his-backend-core</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>his_servicios_consulta_externa</td><td><a href="https://github.com/GoEcosystemDH/his-backend-consulta-externa">his-backend-consulta-externa</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>minciencias_audifarma</td><td><a href="https://github.com/GoEcosystemDH/minciencias-audifarma">minciencias-audifarma</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>pgp</td><td><a href="https://github.com/GoEcosystemDH/contratos">contratos</a></td><td>master</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>ProyectoAMS</td><td><a href="https://github.com/GoEcosystemDH/asm">asm</a></td><td>master</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>ProyectoAMSMovil</td><td><a href="https://github.com/GoEcosystemDH/asm-mobile">asm-mobile</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>ProyectoCeroTramites</td><td><a href="https://github.com/GoEcosystemDH/cero-tramites-web">cero-tramites-web</a></td><td>master</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>Qse</td><td><a href="https://github.com/GoEcosystemDH/qse">qse</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>RegistroClinicoFacil</td><td><a href="https://github.com/GoEcosystemDH/registro-clinico-facil-app-v1">registro-clinico-facil-app-v1</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>Sherlock TRC</td><td><a href="https://github.com/GoEcosystemDH/sherlock-trc">sherlock-trc</a></td><td>main</td><td><span class="badge b-gray">No</span></td><td><span class="badge b-gray">No</span></td></tr>
+  <tr><td>Staff_back</td><td><a href="https://github.com/GoEcosystemDH/staff-api-typebot">staff-api-typebot</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>turnend</td><td><a href="https://github.com/GoEcosystemDH/turnero">turnero</a></td><td>turnend-CCE</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>usabilidadUED</td><td><a href="https://github.com/GoEcosystemDH/cuadro-mando-integral-ued">cuadro-mando-integral-ued</a></td><td>git_build</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  <tr><td>Viaticos</td><td><a href="https://github.com/GoEcosystemDH/viaticos">viaticos</a></td><td>main</td><td><span class="badge b-green">Si</span></td><td><span class="badge b-green">Si</span></td></tr>
+  </tbody>
+  </table>
+  </div>
+  <div class="no-results" id="no-results">No se encontraron repositorios que coincidan con tu busqueda.</div>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 4: Repos NO migrados -->
+  <!-- ============================================================ -->
+  <h2>Repositorios que NO se migraron (Archivo Historico)</h2>
+
+  <div class="callout">
+    <strong>Estos 54 repos NO se migraron</strong> porque llevan mucho tiempo sin cambios. El 96% no ha tenido actividad en mas de 1 año y el 67% lleva mas de 2 años inactivo. Siguen disponibles en GitLab como archivo historico. Si necesitas acceso a alguno, contacta al equipo DevOps.
+  </div>
+
+  <details>
+  <summary>Ver lista completa de repos no migrados (54)</summary>
+  <div class="table-wrap">
+  <table>
+  <thead><tr><th>Repo GitLab</th><th>Ultima Actividad</th><th>Inactividad</th></tr></thead>
+  <tbody>
+  <tr><td>API_HIS</td><td>2021-03-17</td><td>5 años</td></tr>
+  <tr><td>Api_Juridico</td><td>2024-03-13</td><td>2 años</td></tr>
+  <tr><td>Api_Viaticos</td><td>2024-03-12</td><td>2 años</td></tr>
+  <tr><td>apirest</td><td>2021-06-17</td><td>5 años</td></tr>
+  <tr><td>app_cmi</td><td>2025-06-03</td><td>10 meses</td></tr>
+  <tr><td>app-android-EvolutionSubjectivePatient</td><td>2022-05-05</td><td>4 años</td></tr>
+  <tr><td>AppGestionPreventivaDigital</td><td>2024-12-06</td><td>1 ano</td></tr>
+  <tr><td>appjunta</td><td>2024-06-21</td><td>2 años</td></tr>
+  <tr><td>appRic</td><td>2024-05-31</td><td>2 años</td></tr>
+  <tr><td>appric_desarrollo</td><td>2024-06-18</td><td>2 años</td></tr>
+  <tr><td>appRic_desarrollo_old</td><td>2022-03-03</td><td>4 años</td></tr>
+  <tr><td>appRic_old</td><td>2021-06-17</td><td>5 años</td></tr>
+  <tr><td>Auth API</td><td>2023-06-07</td><td>3 años</td></tr>
+  <tr><td>aws</td><td>2024-03-08</td><td>2 años</td></tr>
+  <tr><td>biometrics-ospedale-web</td><td>2021-03-26</td><td>5 años</td></tr>
+  <tr><td>BoletaSalida2</td><td>2021-08-05</td><td>5 años</td></tr>
+  <tr><td>BombasInfusion</td><td>2021-08-26</td><td>5 años</td></tr>
+  <tr><td>bot_cliente</td><td>2025-02-25</td><td>1 ano</td></tr>
+  <tr><td>Citapp</td><td>2021-04-14</td><td>5 años</td></tr>
+  <tr><td>citapp_user</td><td>2024-05-31</td><td>2 años</td></tr>
+  <tr><td>cohortes</td><td>2022-04-29</td><td>4 años</td></tr>
+  <tr><td>compensar</td><td>2024-05-31</td><td>2 años</td></tr>
+  <tr><td>costos</td><td>2024-01-15</td><td>2 años</td></tr>
+  <tr><td>cuidar</td><td>2024-03-20</td><td>2 años</td></tr>
+  <tr><td>django_hola_mundo</td><td>2021-12-21</td><td>4 años</td></tr>
+  <tr><td>eHIS Oncologico API</td><td>2024-12-03</td><td>1 ano</td></tr>
+  <tr><td>eHIS Oncologico Frontend</td><td>2024-12-03</td><td>1 ano</td></tr>
+  <tr><td>encuestapp_teleconsulta</td><td>2021-06-17</td><td>5 años</td></tr>
+  <tr><td>encuestas_wtp</td><td>2022-06-09</td><td>4 años</td></tr>
+  <tr><td>enviapp</td><td>2024-05-31</td><td>2 años</td></tr>
+  <tr><td>enviapp_old</td><td>2021-06-17</td><td>5 años</td></tr>
+  <tr><td>etl</td><td>2021-06-21</td><td>5 años</td></tr>
+  <tr><td>gestionApp_old</td><td>2022-08-19</td><td>4 años</td></tr>
+  <tr><td>glpi-db</td><td>2025-02-20</td><td>1 ano</td></tr>
+  <tr><td>hemoderivados</td><td>2021-07-15</td><td>5 años</td></tr>
+  <tr><td>his_consulta_externa_servicios</td><td>2024-04-25</td><td>2 años</td></tr>
+  <tr><td>HIS_Facturacion</td><td>2023-06-08</td><td>3 años</td></tr>
+  <tr><td>HIS_Facturacion_Services</td><td>2023-06-08</td><td>3 años</td></tr>
+  <tr><td>HIS_HISTORIA_CLINICA</td><td>2024-06-06</td><td>2 años</td></tr>
+  <tr><td>HIS_Ospedale_RCF</td><td>2024-07-08</td><td>2 años</td></tr>
+  <tr><td>interoperabilidad</td><td>2021-06-21</td><td>5 años</td></tr>
+  <tr><td>Juridico</td><td>2024-03-14</td><td>2 años</td></tr>
+  <tr><td>Learn GitLab</td><td>2021-12-27</td><td>4 años</td></tr>
+  <tr><td>MinSalud</td><td>2024-12-24</td><td>1 ano</td></tr>
+  <tr><td>modelo</td><td>2021-06-21</td><td>5 años</td></tr>
+  <tr><td>nginx</td><td>2023-12-21</td><td>2 años</td></tr>
+  <tr><td>pdfGo</td><td>2024-12-20</td><td>1 ano</td></tr>
+  <tr><td>proyecto control</td><td>2023-04-03</td><td>3 años</td></tr>
+  <tr><td>ProyectoVias</td><td>2024-02-05</td><td>2 años</td></tr>
+  <tr><td>qse (old)</td><td>2024-01-22</td><td>2 años</td></tr>
+  <tr><td>Super Giros</td><td>2023-06-07</td><td>3 años</td></tr>
+  <tr><td>Tickets</td><td>2025-04-22</td><td>11 meses</td></tr>
+  <tr><td>Web_RegistroClinicoVoz</td><td>2021-03-15</td><td>5 años</td></tr>
+  <tr><td>wsc-ams</td><td>2022-09-27</td><td>4 años</td></tr>
+  </tbody>
+  </table>
+  </div>
+  </details>
+
+  <!-- ============================================================ -->
+  <!-- SECTION 5: Repo no esta en la lista -->
+  <!-- ============================================================ -->
+  <h2>&iquest;Y si mi repo no esta en la lista?</h2>
+
+  <p>Si trabajas en un repo que no aparece aqui, puede ser que:</p>
+
+  <ul class="bullet-list">
+    <li>Esta en la lista de repos no migrados (archivo historico) &mdash; revisa la seccion anterior.</li>
+    <li>Es un repo nuevo que se creo directamente en GitHub.</li>
+    <li>Necesitas hablar con el equipo DevOps para verificar su estado.</li>
+  </ul>
+
+  <div class="callout-blue">
+    <strong>Consulta las Preguntas Frecuentes</strong> para resolver dudas comunes sobre la migracion, permisos, y flujo de trabajo.
+  </div>
+
+  <div class="links-row">
+    <a class="link-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/preguntas-frecuentes-oT901E42i8">Preguntas Frecuentes</a>
+    <a class="link-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/convencion-de-nombres-para-repositorios-mvb98uiH6q">Convencion de Nombres</a>
+    <a class="link-pill" href="https://wiki.goecosystemdh.com/s/onboarding/p/flujo-de-trabajo-QAw78oyzDK">Flujo de Trabajo</a>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-nav">
+      <a href="../">&larr; Portal</a>
+      <a href="https://wiki.goecosystemdh.com/s/onboarding/p/flujo-de-trabajo-QAw78oyzDK">Modelo de Trabajo &rarr;</a>
+    </div>
+    <p>GoEcosystemDH &mdash; Equipo DevOps &mdash; 2026</p>
+  </div>
+
+</div>
+
+<script>
+  // ── Mermaid init ──
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#0d1117',
+      primaryColor: '#3fb950',
+      secondaryColor: '#d29922'
+    }
+  });
+
+  // ── Searchable table ──
+  (function() {
+    var input = document.getElementById('repo-search');
+    var table = document.getElementById('repo-table');
+    var rows = table.querySelectorAll('tbody tr');
+    var countEl = document.getElementById('search-count');
+    var noResults = document.getElementById('no-results');
+    var totalRows = rows.length;
+
+    input.addEventListener('input', function() {
+      var filter = this.value.toLowerCase();
+      var visible = 0;
+      rows.forEach(function(row) {
+        var text = row.textContent.toLowerCase();
+        var match = text.includes(filter);
+        row.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+      if (filter.length > 0) {
+        countEl.textContent = visible + ' de ' + totalRows + ' repositorios';
+        noResults.style.display = visible === 0 ? 'block' : 'none';
+      } else {
+        countEl.textContent = '';
+        noResults.style.display = 'none';
+      }
+    });
+  })();
+
+  // ── Tabs ──
+  (function() {
+    var buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetId = this.getAttribute('data-tab');
+        var tabs = this.closest('.tabs');
+        tabs.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        tabs.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        this.classList.add('active');
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+  })();
+
+  // ── Copy to clipboard ──
+  (function() {
+    document.querySelectorAll('.copy-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var pre = this.closest('.code-wrap').querySelector('pre');
+        var text = pre.textContent;
+        navigator.clipboard.writeText(text).then(function() {
+          btn.textContent = 'Copiado!';
+          btn.classList.add('copied');
+          setTimeout(function() {
+            btn.textContent = 'Copiar';
+            btn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    });
+  })();
+
+  // ── Tooltip icons ──
+  (function() {
+    var activeTooltip = null;
+
+    document.querySelectorAll('.tooltip-icon').forEach(function(icon) {
+      icon.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var tooltipId = this.getAttribute('data-tooltip');
+        var tooltip = document.getElementById(tooltipId);
+
+        if (activeTooltip && activeTooltip !== tooltip) {
+          activeTooltip.classList.remove('visible');
+        }
+
+        tooltip.classList.toggle('visible');
+        activeTooltip = tooltip.classList.contains('visible') ? tooltip : null;
+
+        // Position tooltip below the icon
+        var iconRect = this.getBoundingClientRect();
+        var thRect = this.closest('th').getBoundingClientRect();
+        tooltip.style.top = (this.offsetTop + this.offsetHeight + 8) + 'px';
+        tooltip.style.left = Math.max(0, this.offsetLeft - 40) + 'px';
+      });
+    });
+
+    document.addEventListener('click', function() {
+      if (activeTooltip) {
+        activeTooltip.classList.remove('visible');
+        activeTooltip = null;
+      }
+    });
+  })();
+</script>
+</body>
+</html>
