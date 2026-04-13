@@ -30,8 +30,8 @@ Bienvenido a la documentación de **Go Ecosystem DH**. Esta wiki es un índice q
 | [Runners Self-Hosted y Sedes](https://wiki.goecosystemdh.com/s/onboarding/p/runners-self-hosted-y-sedes-Zfpnwjs9LG) | Grupos por sede, labels, multi-sede |
 | [Workflow Templates Organizacionales](https://wiki.goecosystemdh.com/s/onboarding/p/workflow-templates-organizacionales-jgNxso4uMI) | Docker CI/CD, Node.js CI |
 | [Dependabot - Actualización de Dependencias](https://wiki.goecosystemdh.com/s/onboarding/p/dependabot-actualizacion-de-dependencias-Qyzj1Br1x9) | Configuración por ecosistema |
-| [Auto PR: develop → main](docs/workflow/auto-pr-develop-to-main.md) | Workflow reusable que crea PRs automáticos de develop a main |
-| [PR Metadata Enrichment](.github/workflows/pr-metadata.yml) | Auto-genera labels y metadata estructurada en PRs para KB/RAG |
+| [Auto PR: develop → main](workflow/auto-pr-develop-to-main.md) | Workflow reusable que crea PRs automáticos de develop a main |
+| [PR Metadata Enrichment](https://github.com/GoEcosystemDH/.github/blob/main/.github/workflows/pr-metadata.yml) | Auto-genera labels y metadata estructurada en PRs para KB/RAG |
 
 ## Seguridad
 
