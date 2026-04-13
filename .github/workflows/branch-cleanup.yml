@@ -1,0 +1,45 @@
+name: Regenerate branch-cleanup.html
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # Cada 6 horas
+  workflow_dispatch:         # Ejecucion manual
+
+permissions:
+  contents: write
+
+concurrency:
+  group: branch-cleanup
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install gh CLI (already present) & verify
+        run: gh --version
+
+      - name: Run generator
+        env:
+          GH_TOKEN: ${{ secrets.ORG_READ_TOKEN || secrets.GITHUB_TOKEN }}
+        run: python3 scripts/generate_branch_cleanup.py
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain branch-cleanup.html)" ]; then
+            git add branch-cleanup.html
+            git commit -m "chore: regenerate branch-cleanup.html [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
